@@ -27,50 +27,31 @@ class Validator
                     return preg_match($pattern, $value) ? true : $message;
                 },
                 
-                // ✨ Nouvelle règle pour CNI sénégalais
                 'cni_senegal' => function($value, $key, $message) {
                     $pattern = '/^[0-9]{13}$/';
                     return preg_match($pattern, $value) ? true : $message;
                 },
                 
-                // ✨ Nouvelle règle pour vérifier l'unicité du CNI
-                'cni_unique' => function($value, $key, $message, $params = [], $data = []) {
+                // ✨ Nouvelle règle unique générique
+                'unique' => function($value, $key, $message, $params = [], $data = []) {
                     try {
-                        require_once __DIR__ . '/../config/env.php';
+                        // Parser les paramètres: "userRepository,telephone"
+                        $paramArray = explode(',', (string)$params);
+                        $repository = $paramArray[0] ?? '';
+                        $field = $paramArray[1] ?? $key;
                         
-                        $dsn = "pgsql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME;
-                        $pdo = new \PDO($dsn, DB_USER, DB_PASSWORD, [
-                            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
-                        ]);
+                        if (empty($repository)) {
+                            return true;
+                        }
                         
-                        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE numero_piece_identite = $1");
-                        $stmt->execute([$value]);
-                        $count = $stmt->fetchColumn();
+                        // Utiliser le container de dépendances
+                        $repo = \App\Core\App::getDependency($repository);
                         
-                        return $count == 0 ? true : $message;
+                        // Appeler la méthode isUnique du repository
+                        return $repo->isUnique($field, $value) ? true : $message;
+                        
                     } catch (\Exception $e) {
-                        error_log("Erreur validation CNI unique: " . $e->getMessage());
-                        return true;
-                    }
-                },
-                
-                // ✨ Nouvelle règle pour vérifier l'unicité du téléphone
-                'phone_unique' => function($value, $key, $message, $params = [], $data = []) {
-                    try {
-                        require_once __DIR__ . '/../config/env.php';
-                        
-                        $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
-                        $pdo = new \PDO($dsn, DB_USER, DB_PASSWORD, [
-                            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
-                        ]);
-                        
-                        $stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE telephone = ?");
-                        $stmt->execute([$value]);
-                        $count = $stmt->fetchColumn();
-                        
-                        return $count == 0 ? true : $message;
-                    } catch (\Exception $e) {
-                        error_log("Erreur validation téléphone unique: " . $e->getMessage());
+                        error_log("Erreur validation unique: " . $e->getMessage());
                         return true;
                     }
                 },
@@ -138,7 +119,65 @@ class Validator
     }
 
     /**
-     * Méthode statique principale pour valider les données
+     * ✨ NOUVELLE MÉTHODE : Validation avec règles et messages regroupés
+     */
+    public static function validateWithMessages($data, $validationRules)
+    {
+        // Initialiser les règles si nécessaire
+        self::initRules();
+        
+        $validator = new self();
+        
+        foreach ($validationRules as $field => $rules) {
+            $value = isset($data[$field]) ? $data[$field] : '';
+            
+            foreach ($rules as $rule => $message) {
+                $result = $validator->applyRuleWithMessage($field, $value, $rule, $message, $data);
+                
+                if ($result !== true) {
+                    $validator->addError($field, $result);
+                    break; // Arrêter à la première erreur pour ce champ
+                }
+            }
+        }
+        
+        return $validator->getErrors();
+    }
+
+    /**
+     * ✨ NOUVELLE MÉTHODE : Applique une règle avec son message
+     */
+    private function applyRuleWithMessage($field, $value, $rule, $message, $data)
+    {
+        $ruleParts = explode(':', $rule);
+        $ruleName = $ruleParts[0];
+        $params = [];
+        
+        // Parser les paramètres selon le type de règle
+        if (isset($ruleParts[1])) {
+            switch ($ruleName) {
+                case 'min_length':
+                case 'max_length':
+                    $params['length'] = (int)$ruleParts[1];
+                    break;
+                case 'file_max_size':
+                    $params['size'] = (int)$ruleParts[1];
+                    break;
+                case 'unique':
+                    $params = $ruleParts[1]; // "userRepository,telephone"
+                    break;
+            }
+        }
+        
+        if (isset(self::$rules[$ruleName])) {
+            return self::$rules[$ruleName]($value, $field, $message, $params, $data);
+        }
+        
+        return true; // Règle inconnue = valide
+    }
+
+    /**
+     * Méthode statique principale pour valider les données (ANCIENNE - pour compatibilité)
      */
     public static function validate($data, $rules, $messages = [])
     {
@@ -163,7 +202,7 @@ class Validator
     }
 
     /**
-     * Applique une règle de validation spécifique
+     * Applique une règle de validation spécifique (ANCIENNE MÉTHODE)
      */
     private function applyRule($field, $value, $rule, $messages, $data)
     {
@@ -179,6 +218,9 @@ class Validator
                     break;
                 case 'file_max_size':
                     $params['size'] = (int)$ruleParts[1];
+                    break;
+                case 'unique':
+                    $params = $ruleParts[1];
                     break;
             }
         }

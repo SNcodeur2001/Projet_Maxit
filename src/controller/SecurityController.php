@@ -7,6 +7,7 @@ use App\Core\Validator;
 use App\Repository\UserRepository;
 use App\Service\SmsService;
  use App\Core\App;
+use App\Enum\ValidationMessages;
 
 
 
@@ -26,29 +27,46 @@ class SecurityController extends AbstractController
 
     public function store()
     {
-        // ✨ Règlesles validation mises à jour avec CNI sénégalais
-        $rules = [
-            'prenom' => 'required|alpha_spaces|max_length:100',
-            'nom' => 'required|alpha_spaces|max_length:100',
-            'adresse' => 'required',
-            'telephone' => 'required|phone_senegal|phone_unique',
-            'numero_piece_identite' => 'required|cni_senegal|cni_unique',
-            'photo_recto' => 'file_required|file_image|file_max_size:5242880',
-            'photo_v_vo' => 'file_required|file_image|file_max_size:5242880',
-            'terms' => 'accepted'
+        $validationRules = [
+            'prenom' => [
+                'required' => ValidationMessages::PRENOM_REQUIRED->value,
+                'alpha_spaces' => ValidationMessages::PRENOM_ALPHA_SPACES->value,
+                'max_length:100' => ValidationMessages::PRENOM_MAX_LENGTH->value
+            ],
+            'nom' => [
+                'required' => ValidationMessages::NOM_REQUIRED->value,
+                'alpha_spaces' => ValidationMessages::NOM_ALPHA_SPACES->value,
+                'max_length:100' => ValidationMessages::NOM_MAX_LENGTH->value
+            ],
+            'adresse' => [
+                'required' => ValidationMessages::ADRESSE_REQUIRED->value
+            ],
+            'telephone' => [
+                'required' => ValidationMessages::TELEPHONE_REQUIRED->value,
+                'phone_senegal' => ValidationMessages::TELEPHONE_FORMAT->value,
+                'unique:userRepository,telephone' => ValidationMessages::TELEPHONE_UNIQUE->value
+            ],
+            'numero_piece_identite' => [
+                'required' => ValidationMessages::CNI_REQUIRED->value,
+                'cni_senegal' => ValidationMessages::CNI_FORMAT->value,
+                'unique:userRepository,numero_piece_identite' => ValidationMessages::CNI_UNIQUE->value
+            ],
+            'photo_recto' => [
+                'file_required' => ValidationMessages::PHOTO_RECTO_REQUIRED->value,
+                'file_image' => ValidationMessages::PHOTO_FORMAT->value,
+                'file_max_size:5242880' => ValidationMessages::PHOTO_MAX_SIZE->value
+            ],
+            'photo_verso' => [
+                'file_required' => ValidationMessages::PHOTO_VERSO_REQUIRED->value,
+                'file_image' => ValidationMessages::PHOTO_FORMAT->value,
+                'file_max_size:5242880' => ValidationMessages::PHOTO_MAX_SIZE->value
+            ],
+            'terms' => [
+                'accepted' => ValidationMessages::TERMS_ACCEPTED->value
+            ]
         ];
 
-        // ✨ Messages personnalisés pour CNI
-        $messages = [
-            'telephone.phone_senegal' => 'Le numéro de téléphone doit être au format sénégalais (ex: +221701234567 ou 701234567)',
-            'telephone.phone_unique' => 'Ce numéro de téléphone est déjà utilisé par un autre compte',
-            'numero_piece_identite.cni_nenegal' => 'Le numéro CNI doit contenir exactement 13 chiffres (ex: 1234567890123)',
-            'numero_piece_identite.cni_unique' => 'Ce numéro de CNI est déjà enregistré dans notre système',
-            'terms.accepted' => 'Vous devez accepter les conditions d\'utilisation'
-        ];
-
-        // Validation en une seule ligne !
-        $errors = Validator::validate($_POST, $rules, $messages);
+        $errors = Validator::validateWithMessages($_POST, $validationRules);
 
         if (!empty($errors)) {
             $this->session->set('errors', $errors);
@@ -83,16 +101,16 @@ class SecurityController extends AbstractController
                     $userData['prenom']
                 );
                 
-                $successMessage = 'Votre compte a été créé avec succès !';
+                $successMessage = ValidationMessages::ACCOUNT_CREATED->value;
                 if ($smsEnvoye) {
-                    $successMessage .= ' Un SMS de confirmation a été envoyé.';
+                    $successMessage .= ValidationMessages::SMS_SENT->value;
                 }
                 
                 $this->session->set('success', $successMessage);
                 header('Location: /');
                 exit;
             } else {
-                $this->session->set('errors', ['general' => 'Erreur lors de la création du compte.']);
+                $this->session->set('errors', ['general' => ValidationMessages::ACCOUNT_CREATION_ERROR->value]);
                 $this->session->set('old_data', $_POST);
                 header('Location: /');
                 exit;
@@ -105,11 +123,11 @@ class SecurityController extends AbstractController
             
             if (strpos($errorMessage, 'utilisateur_piece_unique') !== false || 
                 strpos($errorMessage, 'numero_piece_identite') !== false) {
-                $errors['numero_piece_identite'] = 'Ce numéro de CNI est déjà utilisé par un autre compte.';
+                $errors['numero_piece_identite'] = ValidationMessages::CNI_ALREADY_USED->value;
             } elseif (strpos($errorMessage, 'telephone') !== false) {
-                $errors['telephone'] = 'Ce numéro de téléphone est déjà utilisé par un autre compte.';
+                $errors['telephone'] = ValidationMessages::TELEPHONE_DB_UNIQUE->value;
             } else {
-                $errors['general'] = 'Erreur lors de la création du compte. Veuillez réessayer.';
+                $errors['general'] = ValidationMessages::GENERAL_ERROR->value;
             }
             
             $this->session->set('errors', $errors);
@@ -158,8 +176,8 @@ class SecurityController extends AbstractController
         ];
 
         $messages = [
-            'loginTelephone.required' => 'Veuillez saisir votre numéro de téléphone',
-            'loginTelephone.phone_senegal' => 'Le numéro de téléphone doit être au format sénégalais valide'
+            'loginTelephone.required' => ValidationMessages::TELEPHONE_LOGIN_REQUIRED->value,
+            'loginTelephone.phone_senegal' => ValidationMessages::TELEPHONE_LOGIN_FORMAT->value
         ];
 
         // Validation en une ligne
@@ -187,7 +205,7 @@ class SecurityController extends AbstractController
             header('Location: /dashboard');
             exit;
         } else {
-            $this->session->set('errors', ['loginTelephone' => 'Numéro de téléphone inconnu']);
+            $this->session->set('errors', ['loginTelephone' => ValidationMessages::TELEPHONE_UNKNOWN->value]);
             header('Location: /');
             exit;
         }
@@ -206,7 +224,8 @@ class SecurityController extends AbstractController
     private function handleFileUpload(string $fieldName, string $uploadDir): string
     {
         if (!isset($_FILES[$fieldName]) || $_FILES[$fieldName]['error'] !== UPLOAD_ERR_OK) {
-            throw new Exception("Erreur lors de l'upload du fichier {$fieldName}");
+
+            throw new Exception(ValidationMessages::FILE_UPLOAD_ERROR->value . " {$fieldName}");
         }
 
         // Créer le dossier s'il n'existe pas
@@ -223,7 +242,8 @@ class SecurityController extends AbstractController
         if (move_uploaded_file($_FILES[$fieldName]['tmp_name'], $filePath)) {
             return $filePath;
         } else {
-            throw new Exception("Impossible de sauvegarder le fichier {$fieldName}");
+
+            throw new Exception(ValidationMessages::FILE_SAVE_ERROR->value . " {$fieldName}");
         }
     }
 }

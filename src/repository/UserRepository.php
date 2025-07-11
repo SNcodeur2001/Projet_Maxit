@@ -53,7 +53,7 @@ class UserRepository
             }
 
             // Vérifier si le CNI existe déjà
-            if (!$this->isCNIUnique($userData['numero_piece_identite'])) {
+            if (!$this->isUnique('numero_piece_identite', $userData['numero_piece_identite'])) {
                 throw new Exception("Ce numéro de CNI est déjà enregistré");
             }
 
@@ -165,20 +165,29 @@ class UserRepository
         }
     }
 
-    // ✨ Méthode spécifique pour vérifier l'unicité du CNI
-    public function isCNIUnique(string $cni, ?int $excludeUserId = null): bool
+    /**
+     * Vérifie si une valeur est unique pour un champ donné
+     */
+    public function isUnique(string $field, string $value, ?int $excludeId = null): bool
     {
-        $sql = "SELECT COUNT(*) FROM utilisateur WHERE numero_piece_identite = $1";
-        $params = [$cni];
-        
-        if ($excludeUserId) {
-            $sql .= " AND id != $2";
-            $params[] = $excludeUserId;
+        try {
+            $sql = "SELECT COUNT(*) FROM users WHERE {$field} = ?";
+            $params = [$value];
+            
+            // Exclure un ID spécifique (utile pour les mises à jour)
+            if ($excludeId) {
+                $sql .= " AND id != ?";
+                $params[] = $excludeId;
+            }
+            
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($params);
+            
+            return $stmt->fetchColumn() == 0;
+            
+        } catch (\Exception $e) {
+            error_log("Erreur validation unique {$field}: " . $e->getMessage());
+            return true; // En cas d'erreur, on laisse passer
         }
-        
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($params);
-        
-        return $stmt->fetchColumn() == 0;
     }
 }

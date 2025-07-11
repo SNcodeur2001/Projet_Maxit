@@ -38,13 +38,10 @@ class Router
         if (isset(self::$routes[$method][$uri])) {
             $route = self::$routes[$method][$uri];
 
-            // Inclure le fichier middleware.php pour accéder à runMiddlewares()
-            // require_once __DIR__ . '/middleware.php';
-
-            // Exécuter les middlewares si définis
-            // if (!empty($route['middlewares'])) {
-            //     runMiddlewares($route['middlewares']);
-            // }
+            // ✨ Exécuter les middlewares AVANT le contrôleur
+            if (!empty($route['middlewares'])) {
+                self::runMiddlewares($route['middlewares']);
+            }
 
             $controllerName = $route['controller'];
             $action = $route['action'];
@@ -54,13 +51,81 @@ class Router
         } else {
             // 404 - Route non trouvée
             http_response_code(404);
-            require_once '../templates/404.php';
+            require_once dirname(__DIR__, 2) . '/templates/404.php';
+        }
+    }
+
+    /**
+     * ✨ Exécuter les middlewares avec chargement manuel
+     */
+    private static function runMiddlewares(array $middlewares): void
+    {
+        foreach ($middlewares as $middlewareName) {
+            switch ($middlewareName) {
+                case 'auth':
+                    self::runAuthMiddleware();
+                    break;
+                case 'guest':
+                    self::runGuestMiddleware();
+                    break;
+                default:
+                    throw new \Exception("Middleware '$middlewareName' non supporté.");
+            }
+        }
+    }
+
+    /**
+     * Middleware d'authentification
+     */
+    private static function runAuthMiddleware(): void
+    {
+        // Démarrer la session si pas encore fait
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        // Vérifier si l'utilisateur est connecté
+        if (!isset($_SESSION['user'])) {
+            header('Location: /');
+            exit();
+        }
+
+        // Vérifier que les données utilisateur sont complètes
+        if (!isset($_SESSION['user']['id']) || empty($_SESSION['user']['id'])) {
+            session_destroy();
+            header('Location: /');
+            exit();
+        }
+
+        // Vérifier le statut du compte
+        if (isset($_SESSION['user']['statut_compte']) && 
+            $_SESSION['user']['statut_compte'] !== 'ACTIF') {
+            session_destroy();
+            header('Location: /?error=compte_inactif');
+            exit();
+        }
+    }
+
+    /**
+     * Middleware pour les invités (non connectés)
+     */
+    private static function runGuestMiddleware(): void
+    {
+        // Démarrer la session si pas encore fait
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        // Si l'utilisateur est déjà connecté, rediriger vers le dashboard
+        if (isset($_SESSION['user'])) {
+            header('Location: /dashboard');
+            exit();
         }
     }
 
     private static function loadRoutes(): void
     {
-        require_once __DIR__ . '/../../routes/route.web.php';
+        require_once dirname(__DIR__, 2) . '/routes/route.web.php';
         self::$routesLoaded = true;
     }
 }

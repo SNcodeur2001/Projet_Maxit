@@ -4,7 +4,7 @@ class Auth{
     public function __invoke(){
         session_start();
         if (!isset($_SESSION['user'])) {
-            header('Location: /login');
+            header('Location: /');
             exit();
         }
     }

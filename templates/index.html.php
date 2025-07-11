@@ -495,26 +495,26 @@
       }
 
       // ✨ Validation du formulaire avant soumission
-      document.getElementById('registerForm').addEventListener('submit', function(e) {
-          const cniInput = document.getElementById('numero_piece_identite');
-          const cniValue = cniInput.value.replace(/\D/g, '');
+      // document.getElementById('registerForm').addEventListener('submit', function(e) {
+      //     const cniInput = document.getElementById('numero_piece_identite');
+      //     const cniValue = cniInput.value.replace(/\D/g, '');
             
-          if (cniValue.length !== 13) {
-              e.preventDefault();
-              alert('Le numéro CNI doit contenir exactement 13 chiffres.');
-              cniInput.focus();
-              return false;
-          }
+      //     if (cniValue.length !== 13) {
+      //         e.preventDefault();
+      //         alert('Le numéro CNI doit contenir exactement 13 chiffres.');
+      //         cniInput.focus();
+      //         return false;
+      //     }
             
-          // Vérifier les conditions d'utilisation
-          const termsCheckbox = document.getElementById('terms');
-          if (!termsCheckbox.checked) {
-              e.preventDefault();
-              alert('Vous devez accepter les conditions d\'utilisation.');
-              termsCheckbox.focus();
-              return false;
-          }
-      });
+      //     // Vérifier les conditions d'utilisation
+      //     const termsCheckbox = document.getElementById('terms');
+      //     if (!termsCheckbox.checked) {
+      //         e.preventDefault();
+      //         alert('Vous devez accepter les conditions d\'utilisation.');
+      //         termsCheckbox.focus();
+      //         return false;
+      //     }
+      // });
 
       // ✨ Validation du téléphone en temps réel
       document.getElementById('telephone').addEventListener('input', function(e) {

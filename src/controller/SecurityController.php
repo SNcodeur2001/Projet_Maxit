@@ -6,6 +6,8 @@ use App\Core\Abstract\AbstractController;
 use App\Core\Validator;
 use App\Repository\UserRepository;
 use App\Service\SmsService;
+ use App\Core\App;
+
 
 
 use Exception;
@@ -18,8 +20,8 @@ class SecurityController extends AbstractController
     public function __construct()
     {
         parent::__construct();
-        $this->userRepository = new UserRepository();
-        $this->smsService = new SmsService();
+        $this->userRepository = App::getdependency('userRepository');
+        $this->smsService =App::getDependency('smsService');
     }
 
     public function store()

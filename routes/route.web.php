@@ -15,4 +15,4 @@ Router::get('/transactions', CompteController::class, 'showAllTransactions'); //
 Router::get('/logout', CompteController::class, 'logout');
 
 // Résoudre la route
-Router::resolve();
+// Router::resolve();

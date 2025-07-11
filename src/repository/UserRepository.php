@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Repository;
-
+use App\Core\App;
 use App\Core\Abstract\Database;
 use Exception;
 use PDO;
@@ -13,8 +13,8 @@ class UserRepository
 
     public function __construct()
     {
-        $this->pdo = Database::getConnection();
-        $this->compteRepository = new CompteRepository();
+        $this->pdo = App::getDependency('database');
+        $this->compteRepository = App::getDependency('compteRepository');
     }
 
     /**

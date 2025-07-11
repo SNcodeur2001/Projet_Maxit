@@ -2,16 +2,18 @@
 
 namespace App\Controller;
 
+use App\Core\Abstract\AbstractController;
 use App\Repository\UserRepository;
 use App\Repository\CompteRepository;
 use App\Service\FileUploadService;
 use App\Service\SmsService;
 use App\Repository\TransactionRepository;
 use App\Core\Session;
+use App\Core\App;
 
 use Exception;
 
-class CompteController
+class CompteController extends AbstractController
 {
     private UserRepository $userRepository;
     private CompteRepository $compteRepository;
@@ -20,10 +22,10 @@ class CompteController
 
     public function __construct()
     {
-        $this->userRepository = new UserRepository();
-        $this->compteRepository = new CompteRepository();
-        $this->fileUploadService = new FileUploadService();
-        $this->smsService = new SmsService();
+        $this->userRepository = App::getDependency('userRepository');
+        $this->compteRepository = App::getDependency('compteRepository');
+        $this->fileUploadService = App::getDependency('fileUploadService');
+        $this->smsService = App::getDependency('smsService');
     }
 
     
@@ -210,7 +212,7 @@ class CompteController
     $user = $_SESSION['user'];
     
     // Récupérer toutes les transactions avec selectAll()
-    $transactionRepo = new TransactionRepository();
+    $transactionRepo = App::getDependency('transactionRepository');
     $allTransactions = $transactionRepo->selectAll();
     
     // Filtrer les transactions de l'utilisateur connecté et formater
@@ -263,7 +265,6 @@ private function formatMontant($type, $montant)
      */
     public function logout(): void
     {
-        session_start();
         session_destroy();
         header('Location: /');
         exit;
@@ -370,4 +371,27 @@ private function formatMontant($type, $montant)
 
         return $errors;
     }
+
+  
+
+     public function store(){
+
+     }
+
+     public function create(){
+
+     }
+
+
+     public function destroy(){
+
+     }
+
+     public function show(){
+
+     }
+
+     public function edit(){
+
+     }
 }

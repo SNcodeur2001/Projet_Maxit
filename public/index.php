@@ -1,5 +1,5 @@
 <?php
-
+use App\Core\Router;
 // Affichage des erreurs (optionnel, à désactiver en prod)
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -12,7 +12,7 @@ session_start();
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // Load environment configuration FIRST
-require_once __DIR__ . '/../app/config/env.php';
-
+require_once __DIR__ . '/../app/config/bootstrap.php';
 // Now load routes
-require_once __DIR__ . '/../routes/route.web.php';
+require_once __DIR__ . '/../app/core/Router.php';
+Router::resolve();

@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Core;
+
 class Router
 {
     private static array $routes = [];
+    private static bool $routesLoaded = false;
 
     public static function get(string $uri, string $controller, string $action, array $middlewares = []): void
     {
@@ -25,6 +27,11 @@ class Router
 
     public static function resolve(): void
     {
+        // Charger les routes si pas encore fait
+        if (!self::$routesLoaded) {
+            self::loadRoutes();
+        }
+
         $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $method = $_SERVER['REQUEST_METHOD'];
 
@@ -35,9 +42,9 @@ class Router
             // require_once __DIR__ . '/middleware.php';
 
             // Exécuter les middlewares si définis
-            if (!empty($route['middlewares'])) {
-                runMiddlewares($route['middlewares']);
-            }
+            // if (!empty($route['middlewares'])) {
+            //     runMiddlewares($route['middlewares']);
+            // }
 
             $controllerName = $route['controller'];
             $action = $route['action'];
@@ -50,24 +57,10 @@ class Router
             require_once '../templates/404.php';
         }
     }
+
+    private static function loadRoutes(): void
+    {
+        require_once __DIR__ . '/../../routes/route.web.php';
+        self::$routesLoaded = true;
+    }
 }
-
-
-     // // Vérifier si l'utilisateur est connecté (sauf pour les routes de connexion)
-        // session_start();
-        // $publicRoutes = ['/', '/login', '/authenticate'];
-
-        // if (!in_array($uri, $publicRoutes) && !isset($_SESSION['user_logged'])) {
-        //     header('Location: /login');
-        //     exit;
-        // }
-
-        // // Si pas de route spécifiée, rediriger vers la connexion
-        // if ($uri === '/') {
-        //     if (isset($_SESSION['user_logged'])) {
-        //         header('Location: /list');
-        //         exit;
-        //     } else {
-        //         $uri = '/login';
-        //     }
-        // }

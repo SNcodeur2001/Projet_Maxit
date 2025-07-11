@@ -3,7 +3,13 @@
     "description": "Projet de maxit avec coach wane",
     "autoload": {
         "psr-4": {
-            "Mapathe\\Maxit\\": "src/"
+            "Mapathe\\Maxit\\": "src/",
+            "App\\Core\\Abstract\\": "app/core/abstract/",
+            "App\\Core\\": "app/core/",
+            "App\\Controller\\": "src/controller/",
+            "App\\Entity\\": "src/entity/",
+            "App\\Repository\\": "src/repository/",
+            "App\\Service\\": "src/service/"
         }
     },
     "authors": [
@@ -11,5 +17,8 @@
             "name": "Mapathe Ndiaye"
         }
     ],
-    "require": {}
+    "require": {
+        "vlucas/phpdotenv": "^5.6",
+        "twilio/sdk": "^8.6"
+    }
 }

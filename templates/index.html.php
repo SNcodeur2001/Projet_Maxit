@@ -4,266 +4,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MAXITSA - Services de Transfert et Paiements</title>
-  <style>
-    /* Votre CSS existant reste identique */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background: rgb(237, 235, 235);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .container {
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-      overflow: hidden;
-      width: 100%;
-      max-width: 900px;
-      margin: 20px;
-      position: relative;
-    }
-
-    .header {
-      background: #ff6500;
-      color: white;
-      text-align: center;
-      padding: 40px 20px;
-      position: relative;
-    }
-
-    .logo {
-      font-size: 2.5em;
-      font-weight: bold;
-      margin-bottom: 10px;
-      z-index: 1;
-      position: relative;
-    }
-
-    .tagline {
-      font-size: 1.1em;
-      opacity: 0.9;
-      z-index: 1;
-      position: relative;
-    }
-
-    .form-container {
-      padding: 30px 40px;
-      max-height: 100vh;
-      overflow-y: auto;
-      box-sizing: border-box;
-      position: relative;
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-tabs {
-      display: flex;
-      margin-bottom: 30px;
-      border-bottom: 2px solid #f0f0f0;
-    }
-
-    .tab-button {
-      flex: 1;
-      padding: 15px 20px;
-      background: none;
-      border: none;
-      font-size: 1.1em;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border-bottom: 3px solid transparent;
-      color: #666;
-    }
-
-    .tab-button.active {
-      color: #ff6b35;
-      border-bottom-color: #ff6b35;
-      font-weight: 600;
-    }
-
-    .tab-content {
-      display: none;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    .form-group {
-      margin-bottom: 25px;
-    }
-
-    .form-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    .form-row .form-group {
-      flex: 1 1 250px;
-      min-width: 250px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #333;
-    }
-
-    .required {
-      color: #ff6b35;
-    }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    input[type="tel"],
-    input[type="file"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 12px 15px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 1em;
-      transition: border-color 0.3s ease;
-      box-sizing: border-box;
-    }
-
-    textarea {
-      min-height: 80px;
-      resize: vertical;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      outline: none;
-      border-color: #ff6b35;
-    }
-
-    /* ✨ Style pour les champs avec erreur */
-    .error-field {
-      border-color: #dc3545 !important;
-      background-color: #fff5f5;
-    }
-
-    /* ✨ Style pour les messages d'aide */
-    .help-text {
-      font-size: 0.85em;
-      color: #666;
-      margin-top: 5px;
-    }
-
-    .help-text.error {
-      color: #dc3545;
-    }
-
-    .btn {
-      background: #ff6500;
-      color: white;
-      border: none;
-      padding: 15px 30px;
-      border-radius: 8px;
-      font-size: 1.1em;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(255, 107, 53, 0.3);
-    }
-
-    .login-link {
-      text-align: center;
-      margin-top: 20px;
-      color: #666;
-    }
-
-    .login-link a {
-      color: #ff6b35;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 25px;
-    }
-
-    .checkbox-group input[type="checkbox"] {
-      width: auto;
-    }
-
-    .checkbox-group label {
-      margin-bottom: 0;
-      font-weight: normal;
-    }
-
-    .error-message {
-      background-color: #f8d7da;
-      color: #721c24;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      border: 1px solid #f5c6cb;
-    }
-
-    .error-message ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    .error-message li {
-      margin-bottom: 5px;
-    }
-
-    .success-message {
-      background-color: #d4edda;
-      color: #155724;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      border: 1px solid #c3e6cb;
-    }
-
-    @media (max-width: 768px) {
-      .container {
-        margin: 10px;
-      }
-
-      .form-container {
-        padding: 30px 20px;
-        min-height: 550px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-      }
-
-      .form-row {
-        flex-direction: column;
-        gap: 0;
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'brand-orange': '#ff6500',
+            'brand-light': '#ff6b35',
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-in-out',
+            'slide-up': 'slideUp 0.3s ease-out',
+            'pulse-soft': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(20px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' },
+            }
+          }
+        }
       }
     }
-  </style>
+  </script>
 </head>
-<body>
+<body class="bg-gradient-to-br from-gray-100 via-gray-50 to-blue-50 min-h-screen flex items-center justify-center p-4"> -->
+  
   <?php
   // Récupération des données de session
   $errors = $_SESSION['errors'] ?? [];
@@ -273,271 +44,354 @@
   // Nettoyer les données de session après récupération
   unset($_SESSION['errors'], $_SESSION['old_data'], $_SESSION['success']);
   ?>
-   -->
-  <div class="container">
-      <div class="header">
-          <div class="logo">MAXITSA</div>
-          <div class="tagline">Services de Transfert et Paiements</div>
+  
+  <div class="bg-white rounded-3xl shadow-2xl overflow-hidden w-full max-w-4xl relative animate-fade-in">
+    <!-- Header avec gradient et animations -->
+    <div class="bg-gradient-to-r from-brand-orange to-brand-light text-white text-center py-12 px-6 relative overflow-hidden">
+      <div class="absolute inset-0 bg-black/5"></div>
+      <div class="absolute top-0 left-0 w-full h-full">
+        <div class="absolute top-4 left-4 w-8 h-8 bg-white/20 rounded-full animate-pulse-soft"></div>
+        <div class="absolute top-8 right-8 w-4 h-4 bg-white/30 rounded-full animate-pulse-soft" style="animation-delay: 0.5s"></div>
+        <div class="absolute bottom-6 left-1/3 w-6 h-6 bg-white/15 rounded-full animate-pulse-soft" style="animation-delay: 1s"></div>
+      </div>
+      <div class="relative z-10">
+        <h1 class="text-4xl md:text-5xl font-bold mb-3 tracking-wide">MAXITSA</h1>
+        <p class="text-xl opacity-90 font-light">Services de Transfert et Paiements</p>
+      </div>
+    </div>
+
+    <div class="p-8 md:p-12">
+      <!-- Messages d'erreur -->
+      <?php if (!empty($errors)): ?>
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-lg animate-slide-up">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <ul class="text-sm text-red-700">
+                <?php foreach ($errors as $field => $error): ?>
+                  <li class="mb-1"><?= htmlspecialchars($error) ?></li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+          </div>
+        </div>
+      <?php endif; ?>
+
+      <!-- Message de succès -->
+      <?php if ($success): ?>
+        <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-lg animate-slide-up">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-green-700"><?= htmlspecialchars($success) ?></p>
+            </div>
+          </div>
+        </div>
+      <?php endif; ?>
+
+      <!-- Onglets -->
+      <div class="border-b border-gray-200 mb-8">
+        <nav class="flex space-x-8">
+          <button class="tab-button active py-4 px-1 border-b-2 font-medium text-sm focus:outline-none transition-all duration-300" onclick="showTab('register')">
+            <span class="flex items-center space-x-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+              </svg>
+              <span>Créer un compte</span>
+            </span>
+          </button>
+          <button class="tab-button py-4 px-1 border-b-2 font-medium text-sm focus:outline-none transition-all duration-300" onclick="showTab('login')">
+            <span class="flex items-center space-x-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+              </svg>
+              <span>Se connecter</span>
+            </span>
+          </button>
+        </nav>
       </div>
 
-      <div class="form-container">
-          <?php if (!empty($errors)): ?>
-              <div class="error-message">
-                  <ul>
-                      <?php foreach ($errors as $field => $error): ?>
-                          <li><?= htmlspecialchars($error) ?></li>
-                      <?php endforeach; ?>
-                  </ul>
+      <!-- Formulaire de création de compte -->
+      <div id="register-tab" class="tab-content active">
+        <form id="registerForm" method="POST" action="/register" enctype="multipart/form-data" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-group">
+              <label for="prenom" class="block text-sm font-semibold text-gray-700 mb-2">
+                Prénom <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="prenom"
+                name="prenom"
+                value="<?= htmlspecialchars($oldData['prenom'] ?? '') ?>"
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-light focus:border-transparent transition-all duration-300 <?= isset($errors['prenom']) ? 'border-red-500 bg-red-50' : '' ?>"
+                placeholder="Votre prénom"
+              />
+            </div>
+            <div class="form-group">
+              <label for="nom" class="block text-sm font-semibold text-gray-700 mb-2">
+                Nom <span class="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="nom"
+                name="nom"
+                value="<?= htmlspecialchars($oldData['nom'] ?? '') ?>"
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-light focus:border-transparent transition-all duration-300 <?= isset($errors['nom']) ? 'border-red-500 bg-red-50' : '' ?>"
+                placeholder="Votre nom"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="adresse" class="block text-sm font-semibold text-gray-700 mb-2">
+              Adresse <span class="text-red-500">*</span>
+            </label>
+            <textarea
+              id="adresse"
+              name="adresse"
+              rows="3"
+              placeholder="Votre adresse complète"
+              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-light focus:border-transparent transition-all duration-300 resize-none <?= isset($errors['adresse']) ? 'border-red-500 bg-red-50' : '' ?>"
+            ><?= htmlspecialchars($oldData['adresse'] ?? '') ?></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="telephone" class="block text-sm font-semibold text-gray-700 mb-2">
+              Téléphone <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="tel"
+              id="telephone"
+              name="telephone"
+              value="<?= htmlspecialchars($oldData['telephone'] ?? '') ?>"
+              placeholder="Ex: +221701234567 ou 701234567"
+              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-light focus:border-transparent transition-all duration-300 <?= isset($errors['telephone']) ? 'border-red-500 bg-red-50' : '' ?>"
+            />
+            <p class="mt-2 text-sm text-gray-600">Format sénégalais requis (ex: +221701234567 ou 701234567)</p>
+          </div>
+
+          <div class="form-group">
+            <label for="numero_piece_identite" class="block text-sm font-semibold text-gray-700 mb-2">
+              Numéro de CNI <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              id="numero_piece_identite"
+              name="numero_piece_identite"
+              value="<?= htmlspecialchars($oldData['numero_piece_identite'] ?? '') ?>"
+              placeholder="Ex: 1234567890123"
+              maxlength="13"
+              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-light focus:border-transparent transition-all duration-300 <?= isset($errors['numero_piece_identite']) ? 'border-red-500 bg-red-50' : '' ?>"
+              oninput="validateCNI(this)"
+            />
+            <p class="mt-2 text-sm text-gray-600" id="cni-help">
+              ✨ Numéro CNI sénégalais : exactement 13 chiffres
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-group">
+              <label for="photo_recto" class="block text-sm font-semibold text-gray-700 mb-2">
+                Photo recto de la CNI <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <input
+                  type="file"
+                  id="photo_recto"
+                  name="photo_recto"
+                  accept="image/jpeg,image/png,image/jpg"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-light focus:border-transparent transition-all duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-light file:text-white hover:file:bg-brand-orange <?= isset($errors['photo_recto']) ? 'border-red-500 bg-red-50' : '' ?>"
+                />
               </div>
-          <?php endif; ?>
+              <p class="mt-2 text-xs text-gray-500">Formats acceptés: JPG, JPEG, PNG (max 5MB)</p>
+            </div>
 
-          <?php if ($success): ?>
-              <div class="success-message">
-                  <?= htmlspecialchars($success) ?>
+            <div class="form-group">
+              <label for="photo_verso" class="block text-sm font-semibold text-gray-700 mb-2">
+                Photo verso de la CNI <span class="text-red-500">*</span>
+              </label>
+              <div class="relative">
+                <input
+                  type="file"
+                  id="photo_verso"
+                  name="photo_verso"
+                  accept="image/jpeg,image/png,image/jpg"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-light focus:border-transparent transition-all duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-light file:text-white hover:file:bg-brand-orange <?= isset($errors['photo_verso']) ? 'border-red-500 bg-red-50' : '' ?>"
+                />
               </div>
-          <?php endif; ?>
-
-          <div class="form-tabs">
-              <button class="tab-button active" onclick="showTab('register')">
-                  Créer un compte
-              </button>
-              <button class="tab-button" onclick="showTab('login')">
-                  Se connecter
-              </button>
+              <p class="mt-2 text-xs text-gray-500">Formats acceptés: JPG, JPEG, PNG (max 5MB)</p>
+            </div>
           </div>
 
-          <!-- Formulaire de création de compte -->
-          <div id="register-tab" class="tab-content active">
-              <form id="registerForm" method="POST" action="/register" enctype="multipart/form-data">
-                  <div class="form-row">
-                      <div class="form-group">
-                          <label for="prenom">Prénom <span class="required">*</span></label>
-                          <input
-                              type="text"
-                              id="prenom"
-                              name="prenom"
-                              value="<?= htmlspecialchars($oldData['prenom'] ?? '') ?>"
-                              class="<?= isset($errors['prenom']) ? 'error-field' : '' ?>"
-                          />
-                      </div>
-                      <div class="form-group">
-                          <label for="nom">Nom <span class="required">*</span></label>
-                          <input
-                              type="text"
-                              id="nom"
-                              name="nom"
-                              value="<?= htmlspecialchars($oldData['nom'] ?? '') ?>"
-                              class="<?= isset($errors['nom']) ? 'error-field' : '' ?>"
-                          />
-                      </div>
-                  </div>
-
-                  <div class="form-group">
-                      <label for="adresse">Adresse <span class="required">*</span></label>
-                      <textarea
-                          id="adresse"
-                          name="adresse"
-                          rows="3"
-                          placeholder="Votre adresse complète"
-                          class="<?= isset($errors['adresse']) ? 'error-field' : '' ?>"
-                      ><?= htmlspecialchars($oldData['adresse'] ?? '') ?></textarea>
-                  </div>
-
-                  <div class="form-group">
-                      <label for="telephone">Téléphone <span class="required">*</span></label>
-                      <input
-                          type="tel"
-                          id="telephone"
-                          name="telephone"
-                          value="<?= htmlspecialchars($oldData['telephone'] ?? '') ?>"
-                          placeholder="Ex: +221701234567 ou 701234567"
-                          class="<?= isset($errors['telephone']) ? 'error-field' : '' ?>"
-                      />
-                      <div class="help-text">Format sénégalais requis (ex: +221701234567 ou 701234567)</div>
-                  </div>
-
-                  <div class="form-group">
-                      <label for="numero_piece_identite">Numéro de CNI <span class="required">*</span></label>
-                      <input
-                          type="text"
-                          id="numero_piece_identite"
-                          name="numero_piece_identite"
-                          value="<?= htmlspecialchars($oldData['numero_piece_identite'] ?? '') ?>"
-                          placeholder="Ex: 1234567890123"
-                          maxlength="13"
-                          class="<?= isset($errors['numero_piece_identite']) ? 'error-field' : '' ?>"
-                          oninput="validateCNI(this)"
-                      />
-                      <div class="help-text" id="cni-help">
-                          ✨ Numéro CNI sénégalais : exactement 13 chiffres
-                      </div>
-                  </div>
-
-                  <div class="form-group">
-                      <label for="photo_recto">Photo recto de la CNI <span class="required">*</span></label>
-                      <input
-                          type="file"
-                          id="photo_recto"
-                          name="photo_recto"
-                          accept="image/jpeg,image/png,image/jpg"
-                          class="<?= isset($errors['photo_recto']) ? 'error-field' : '' ?>"
-                      />
-                      <small style="color: #666; font-size: 0.9em;">Formats acceptés: JPG, JPEG, PNG (max 5MB)</small>
-                  </div>
-
-                  <div class="form-group">
-                      <label for="photo_verso">Photo verso de la CNI <span class="required">*</span></label>
-                      <input
-                          type="file"
-                          id="photo_verso"
-                          name="photo_verso"
-                          accept="image/jpeg,image/png,image/jpg"
-                          class="<?= isset($errors['photo_verso']) ? 'error-field' : '' ?>"
-                      />
-                      <small style="color: #666; font-size: 0.9em;">Formats acceptés: JPG, JPEG, PNG (max 5MB)</small>
-                  </div>
-
-                  <div class="checkbox-group">
-                      <input type="checkbox" id="terms" name="terms"  />
-                      <label for="terms">
-                          J'accepte les
-                          <a href="#" style="color: #ff6b35">conditions d'utilisation</a>
-                          et la
-                          <a href="#" style="color: #ff6b35">politique de confidentialité</a>
-                      </label>
-                  </div>
-
-                  <button type="submit" class="btn">
-                      Créer mon compte principal
-                  </button>
-
-                  <div class="login-link">
-                      Vous avez déjà un compte ?
-                      <a href="#" onclick="showTab('login')">Se connecter</a>
-                  </div>
-              </form>
+          <div class="flex items-center space-x-3">
+            <input type="checkbox" id="terms" name="terms" class="w-5 h-5 text-brand-light border-2 border-gray-300 rounded focus:ring-brand-light focus:ring-2" />
+            <label for="terms" class="text-sm text-gray-700">
+              J'accepte les
+              <a href="#" class="text-brand-light hover:text-brand-orange font-medium underline">conditions d'utilisation</a>
+              et la
+              <a href="#" class="text-brand-light hover:text-brand-orange font-medium underline">politique de confidentialité</a>
+            </label>
           </div>
 
-          <!-- Formulaire de connexion -->
-          <div id="login-tab" class="tab-content">
-              <form id="loginForm" method="POST" action="/login">
-                  <div class="form-group">
-                      <label for="loginTelephone">Téléphone <span class="required">*</span></label>
-                      <input
-                          type="tel"
-                          id="loginTelephone"
-                          name="loginTelephone"
-                            
-                          placeholder="Ex: +221701234567 ou 701234567"
-                          class="<?= isset($errors['loginTelephone']) ? 'error-field' : '' ?>"
-                      />
-                  </div>
+          <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-light text-white py-4 px-6 rounded-xl font-semibold text-lg hover:from-brand-light hover:to-brand-orange transform hover:scale-[1.02] transition-all duration-300 shadow-lg hover:shadow-xl">
+            Créer mon compte principal
+          </button>
 
-                  <button type="submit" class="btn">Se connecter</button>
-
-                  <div class="login-link">
-                      Pas encore de compte ?
-                      <a href="#" onclick="showTab('register')">Créer un compte</a>
-                  </div>
-              </form>
+          <div class="text-center text-gray-600">
+            Vous avez déjà un compte ?
+            <a href="#" onclick="showTab('login')" class="text-brand-light hover:text-brand-orange font-semibold ml-1">Se connecter</a>
           </div>
+        </form>
       </div>
+
+      <!-- Formulaire de connexion -->
+      <div id="login-tab" class="tab-content hidden">
+        <form id="loginForm" method="POST" action="/login" class="space-y-6">
+          <div class="form-group">
+            <label for="loginTelephone" class="block text-sm font-semibold text-gray-700 mb-2">
+              Téléphone <span class="text-red-500">*</span>
+            </label>
+            <input
+              type="tel"
+              id="loginTelephone"
+              name="loginTelephone"
+              placeholder="Ex: +221701234567 ou 701234567"
+              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-brand-light focus:border-transparent transition-all duration-300 <?= isset($errors['loginTelephone']) ? 'border-red-500 bg-red-50' : '' ?>"
+            />
+          </div>
+
+          <button type="submit" class="w-full bg-gradient-to-r from-brand-orange to-brand-light text-white py-4 px-6 rounded-xl font-semibold text-lg hover:from-brand-light hover:to-brand-orange transform hover:scale-[1.02] transition-all duration-300 shadow-lg hover:shadow-xl">
+            Se connecter
+          </button>
+
+          <div class="text-center text-gray-600">
+            Pas encore de compte ?
+            <a href="#" onclick="showTab('register')" class="text-brand-light hover:text-brand-orange font-semibold ml-1">Créer un compte</a>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 
   <script>
-      function showTab(tabName) {
-          // Masquer tous les contenus d'onglets
-          document.querySelectorAll(".tab-content").forEach((content) => {
-              content.classList.remove("active");
-          });
-
-          // Désactiver tous les boutons d'onglets
-          document.querySelectorAll(".tab-button").forEach((button) => {
-              button.classList.remove("active");
-          });
-
-          // Activer l'onglet sélectionné
-          document.getElementById(tabName + "-tab").classList.add("active");
-          event.target.classList.add("active");
-      }
-
-      // ✨ Fonction de validation en temps réel du CNI
-      function validateCNI(input) {
-          const value = input.value;
-          const helpText = document.getElementById('cni-help');
-            
-          // Supprimer tous les caractères non numériques
-          const numericValue = value.replace(/\D/g, '');
-            
-          // Limiter à 13 chiffres
-          if (numericValue.length > 13) {
-              input.value = numericValue.substring(0, 13);
-              return;
-          }
-            
-          input.value = numericValue;
-            
-          // Validation visuelle
-          if (numericValue.length === 0) {
-              helpText.textContent = "✨ Numéro CNI sénégalais : exactement 13 chiffres";
-              helpText.className = "help-text";
-              input.classList.remove('error-field');
-          } else if (numericValue.length < 13) {
-              helpText.textContent = `❌ ${numericValue.length}/13 chiffres - Il manque ${13 - numericValue.length} chiffre(s)`;
-              helpText.className = "help-text error";
-              input.classList.add('error-field');
-          } else if (numericValue.length === 13) {
-              helpText.textContent = "✅ Format CNI valide !";
-              helpText.className = "help-text";
-              helpText.style.color = "#28a745";
-              input.classList.remove('error-field');
-          }
-      }
-
-      // ✨ Validation du formulaire avant soumission
-      // document.getElementById('registerForm').addEventListener('submit', function(e) {
-      //     const cniInput = document.getElementById('numero_piece_identite');
-      //     const cniValue = cniInput.value.replace(/\D/g, '');
-            
-      //     if (cniValue.length !== 13) {
-      //         e.preventDefault();
-      //         alert('Le numéro CNI doit contenir exactement 13 chiffres.');
-      //         cniInput.focus();
-      //         return false;
-      //     }
-            
-      //     // Vérifier les conditions d'utilisation
-      //     const termsCheckbox = document.getElementById('terms');
-      //     if (!termsCheckbox.checked) {
-      //         e.preventDefault();
-      //         alert('Vous devez accepter les conditions d\'utilisation.');
-      //         termsCheckbox.focus();
-      //         return false;
-      //     }
-      // });
-
-      // ✨ Validation du téléphone en temps réel
-      document.getElementById('telephone').addEventListener('input', function(e) {
-          const value = e.target.value;
-          const phonePattern = /^(\+221|7[056789])[0-9]{7}$/;
-            
-          if (value && !phonePattern.test(value)) {
-              e.target.classList.add('error-field');
-          } else {
-              e.target.classList.remove('error-field');
-          }
+    function showTab(tabName) {
+      // Masquer tous les contenus d'onglets
+      document.querySelectorAll(".tab-content").forEach((content) => {
+        content.classList.add("hidden");
+        content.classList.remove("active");
       });
 
-      document.getElementById('loginTelephone').addEventListener('input', function(e) {
-          const value = e.target.value;
-          const phonePattern = /^(\+221|7[056789])[0-9]{7}$/;
-            
-          if (value && !phonePattern.test(value)) {
-              e.target.classList.add('error-field');
-          } else {
-              e.target.classList.remove('error-field');
-          }
+      // Désactiver tous les boutons d'onglets
+      document.querySelectorAll(".tab-button").forEach((button) => {
+        button.classList.remove("active", "text-brand-light", "border-brand-light");
+        button.classList.add("text-gray-500", "border-transparent");
       });
+
+      // Activer l'onglet sélectionné
+      document.getElementById(tabName + "-tab").classList.remove("hidden");
+      document.getElementById(tabName + "-tab").classList.add("active");
+      event.target.closest('.tab-button').classList.add("active", "text-brand-light", "border-brand-light");
+      event.target.closest('.tab-button').classList.remove("text-gray-500", "border-transparent");
+    }
+
+    // Fonction de validation en temps réel du CNI
+    function validateCNI(input) {
+      const value = input.value;
+      const helpText = document.getElementById('cni-help');
+        
+      // Supprimer tous les caractères non numériques
+      const numericValue = value.replace(/\D/g, '');
+        
+      // Limiter à 13 chiffres
+      if (numericValue.length > 13) {
+        input.value = numericValue.substring(0, 13);
+        return;
+      }
+        
+      input.value = numericValue;
+        
+      // Validation visuelle
+      if (numericValue.length === 0) {
+        helpText.textContent = "✨ Numéro CNI sénégalais : exactement 13 chiffres";
+        helpText.className = "mt-2 text-sm text-gray-600";
+        input.classList.remove('border-red-500', 'bg-red-50');
+        input.classList.add('border-gray-200');
+      } else if (numericValue.length < 13) {
+        helpText.textContent = `❌ ${numericValue.length}/13 chiffres - Il manque ${13 - numericValue.length} chiffre(s)`;
+        helpText.className = "mt-2 text-sm text-red-600";
+        input.classList.add('border-red-500', 'bg-red-50');
+        input.classList.remove('border-gray-200');
+      } else if (numericValue.length === 13) {
+        helpText.textContent = "✅ Format CNI valide !";
+        helpText.className = "mt-2 text-sm text-green-600";
+        input.classList.remove('border-red-500', 'bg-red-50');
+        input.classList.add('border-green-500', 'bg-green-50');
+      }
+    }
+
+    // Validation du téléphone en temps réel
+    document.getElementById('telephone').addEventListener('input', function(e) {
+      const value = e.target.value;
+      const phonePattern = /^(\+221|7[056789])[0-9]{7}$/;
+        
+      if (value && !phonePattern.test(value)) {
+        e.target.classList.add('border-red-500', 'bg-red-50');
+        e.target.classList.remove('border-gray-200');
+      } else {
+        e.target.classList.remove('border-red-500', 'bg-red-50');
+        e.target.classList.add('border-gray-200');
+      }
+    });
+
+    document.getElementById('loginTelephone').addEventListener('input', function(e) {
+      const value = e.target.value;
+      const phonePattern = /^(\+221|7[056789])[0-9]{7}$/;
+        
+      if (value && !phonePattern.test(value)) {
+        e.target.classList.add('border-red-500', 'bg-red-50');
+        e.target.classList.remove('border-gray-200');
+      } else {
+        e.target.classList.remove('border-red-500', 'bg-red-50');
+        e.target.classList.add('border-gray-200');
+      }
+    });
+
+    // Initialiser les classes pour les onglets
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.tab-button').forEach(button => {
+        if (button.classList.contains('active')) {
+          button.classList.add('text-brand-light', 'border-brand-light');
+          button.classList.remove('text-gray-500', 'border-transparent');
+        } else {
+          button.classList.add('text-gray-500', 'border-transparent');
+          button.classList.remove('text-brand-light', 'border-brand-light');
+        }
+      });
+    });
   </script>
+
+  <style>
+    .tab-button.active {
+      color: #ff6b35;
+      border-bottom-color: #ff6b35;
+    }
+    .tab-button:not(.active) {
+      color: #6b7280;
+      border-bottom-color: transparent;
+    }
+    .tab-button:not(.active):hover {
+      color: #ff6b35;
+      border-bottom-color: #ff6b35;
+    }
+  </style>
 <!-- </body>
 </html> -->

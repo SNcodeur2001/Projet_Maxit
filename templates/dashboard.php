@@ -15,497 +15,178 @@ unset($_SESSION['success']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - MAXITSA</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background: rgb(237, 235, 235);
-            min-height: 100vh;
-        }
-
-        .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            width: 100%;
-            max-width: 900px;
-            margin: 20px auto;
-            position: relative;
-        }
-
-        .dashboard-header {
-            background: #ff6500;
-            color: white;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-
-        .logout-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-            text-decoration: none;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .form-container {
-            padding: 30px 40px;
-        }
-
-        .success-message {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #c3e6cb;
-        }
-
-        .account-info {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            border: 1px solid #dee2e6;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .account-info h3 {
-            color: #ff6500;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
-        .info-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .info-label {
-            font-weight: 600;
-            color: #495057;
-        }
-
-        .info-value {
-            color: #6c757d;
-            font-family: monospace;
-        }
-
-        .balance-card {
-            background: linear-gradient(135deg, #ff6500, #ff8533);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            text-align: center;
-            box-shadow: 0 10px 20px rgba(255, 101, 0, 0.3);
-        }
-
-        .balance-amount {
-            font-size: 3em;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-
-        .balance-label {
-            font-size: 1.2em;
-            opacity: 0.9;
-        }
-
-        .account-number {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-family: monospace;
-            font-size: 1.1em;
-            letter-spacing: 1px;
-        }
-
-        .actions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .action-card {
-            background: white;
-            border: 2px solid #f0f0f0;
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .action-card:hover {
-            border-color: #ff6b35;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .action-icon {
-            font-size: 2.5em;
-            color: #ff6b35;
-            margin-bottom: 10px;
-        }
-
-        .action-title {
-            font-size: 1.2em;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .action-desc {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .status-actif {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .status-inactif {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                margin: 10px;
-            }
-            
-            .dashboard-header {
-                padding: 15px 20px;
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .form-container {
-                padding: 20px;
-            }
-            
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .actions-grid {
-                grid-template-columns: 1fr;
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#ff6500',
+                        'primary-light': '#ff8533',
+                        'primary-dark': '#e55700',
+                    }
+                }
             }
         }
-
-        /* AJOUT : Styles pour les transactions */
-        .transactions-section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-        }
-
-        .transactions-section h3 {
-            color: #ff6500;
-            margin-bottom: 20px;
-            font-size: 1.3em;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 10px;
-        }
-
-        .transactions-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .transaction-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #f5f5f5;
-            transition: background-color 0.2s ease;
-        }
-
-        .transaction-item:hover {
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            padding-left: 10px;
-            padding-right: 10px;
-        }
-
-        .transaction-item:last-child {
-            border-bottom: none;
-        }
-
-        .transaction-type {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .transaction-icon {
-            font-size: 1.5em;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .transaction-icon.credit {
-            background: rgba(40, 167, 69, 0.1);
-        }
-
-        .transaction-icon.debit {
-            background: rgba(220, 53, 69, 0.1);
-        }
-
-        .transaction-details {
-            flex: 1;
-        }
-
-        .transaction-title {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 4px;
-        }
-
-        .transaction-date {
-            font-size: 0.85em;
-            color: #666;
-        }
-
-        .transaction-amount {
-            font-weight: bold;
-            font-size: 1.1em;
-            font-family: monospace;
-        }
-
-        .transaction-amount.credit {
-            color: #28a745;
-        }
-
-        .transaction-amount.debit {
-            color: #dc3545;
-        }
-
-        .no-transactions {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666;
-        }
-
-        .no-transactions-icon {
-            font-size: 3em;
-            margin-bottom: 15px;
-            opacity: 0.5;
-        }
-
-        .view-all-transactions {
-            text-align: center;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .view-all-btn {
-            color: #ff6500;
-            text-decoration: none;
-            font-weight: 600;
-            padding: 8px 16px;
-            border-radius: 6px;
-            transition: all 0.3s ease;
-        }
-
-        .view-all-btn:hover {
-            background-color: #ff6500;
-            color: white;
-        }
-    </style>
+    </script>
 </head>
-<body>
-    <div class="container">
-        <div class="dashboard-header">
-            <div class="user-info">
-                <div class="user-avatar">
-                    <?= strtoupper(substr($user['prenom'], 0, 1) . substr($user['nom'], 0, 1)) ?>
-                </div>
-                <div>
-                    <div style="font-weight: 600"><?= htmlspecialchars($user['prenom'] . ' ' . $user['nom']) ?></div>
-                    <div style="opacity: 0.8; font-size: 0.9em">
-                        Compte <?= ucfirst($user['type']) ?> • <?= htmlspecialchars($user['telephone']) ?>
+<body class="min-h-screen bg-gray-100">
+    <div class="container mx-auto px-4 py-6 max-w-6xl">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-primary to-primary-light text-white rounded-2xl shadow-2xl mb-8 overflow-hidden">
+            <div class="p-8 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-6">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center text-2xl font-bold backdrop-blur-sm">
+                        <?= strtoupper(substr($user['prenom'], 0, 1) . substr($user['nom'], 0, 1)) ?>
+                    </div>
+                    <div>
+                        <div class="text-xl font-bold"><?= htmlspecialchars($user['prenom'] . ' ' . $user['nom']) ?></div>
+                        <div class="text-white/90 text-sm">
+                            Compte <?= ucfirst($user['type']) ?> • <?= htmlspecialchars($user['telephone']) ?>
+                        </div>
                     </div>
                 </div>
+                <a href="/logout" class="bg-white/20 hover:bg-white/30 transition-all duration-300 px-6 py-3 rounded-lg backdrop-blur-sm font-medium">
+                    Déconnexion
+                </a>
             </div>
-            <a href="/logout" class="logout-btn">Déconnexion</a>
         </div>
 
-        <div class="form-container">
-            <?php if ($success): ?>
-                <div class="success-message">
-                    <?= htmlspecialchars($success) ?>
-                </div>
-            <?php endif; ?>
-
-            <div class="account-info">
-                <h3>📋 Informations du compte</h3>
-                <div class="info-grid">
-                    <div class="info-item">
-                        <span class="info-label">Numéro de compte :</span>
-                        <span class="info-value"><?= htmlspecialchars($user['numero_compte'] ?? 'Non défini') ?></span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Statut du compte :</span>
-                        <span class="status-badge status-<?= strtolower($user['statut_compte'] ?? 'actif') ?>">
-                            <?= htmlspecialchars($user['statut_compte'] ?? 'ACTIF') ?>
-                        </span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Type de compte :</span>
-                        <span class="info-value">COMPTE PRIMAIRE</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Date de création :</span>
-                        <span class="info-value"><?= date('d/m/Y') ?></span>
-                    </div>
+        <!-- Success Message -->
+        <?php if ($success): ?>
+            <div class="bg-green-50 border border-green-200 text-green-800 px-6 py-4 rounded-xl mb-8 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="text-green-500 text-xl">✓</div>
+                    <div><?= htmlspecialchars($success) ?></div>
                 </div>
             </div>
+        <?php endif; ?>
 
-            <div class="balance-card">
-                <div class="balance-label">Solde du compte principal</div>
-                <div class="balance-amount"><?= number_format($user['solde'] ?? 0, 0, ',', ' ') ?> FCFA</div>
-                <?php if ($user['numero']): ?>
-                    <div class="account-number">
-                        N° <?= htmlspecialchars($user['numero']) ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-
-            <div class="actions-grid">
-                <div class="action-card" onclick="showAction('transfer')">
-                    <div class="action-icon">💸</div>
-                    <div class="action-title">Effectuer un transfert</div>
-                    <div class="action-desc">
-                        Envoyer de l'argent rapidement et en sécurité
-                    </div>
+        <!-- Account Info -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-8 border border-gray-100">
+            <h3 class="text-2xl font-bold text-primary mb-6 flex items-center gap-3">
+                <span class="text-2xl">📋</span>
+                Informations du compte
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+                    <span class="font-semibold text-gray-700">Numéro de compte :</span>
+                    <span class="font-mono text-gray-600 bg-white px-3 py-1 rounded-lg"><?= htmlspecialchars($user['numero_compte'] ?? 'Non défini') ?></span>
                 </div>
-
-                <div class="action-card" onclick="showAction('payment')">
-                    <div class="action-icon">💳</div>
-                    <div class="action-title">Paiement</div>
-                    <div class="action-desc">Payer vos factures et services</div>
-                </div>
-
-                <div class="action-card" onclick="showAction('history')">
-                    <div class="action-icon">📊</div>
-                    <div class="action-title">Historique</div>
-                    <div class="action-desc">Consulter vos transactions</div>
-                </div>
-
-                <div class="action-card" onclick="showAction('deposit')">
-                    <div class="action-icon">💰</div>
-                    <div class="action-title">Dépôt</div>
-                    <div class="action-desc">Alimenter votre compte</div>
-                </div>
-            </div>
-
-            <!-- AJOUT : Section des transactions récentes -->
-            <div class="transactions-section">
-                <h3>📊 Dernières transactions</h3>
                 
-                <?php if (empty($recentTransactions)): ?>
-                    <div class="no-transactions">
-                        <div class="no-transactions-icon">💳</div>
-                        <p>Aucune transaction pour le moment</p>
-                        <small>Vos futures transactions apparaîtront ici</small>
-                    </div>
-                <?php else: ?>
-                    <div class="transactions-list">
-                        <?php foreach ($recentTransactions as $transaction): ?>
-                            <div class="transaction-item">
-                                <div class="transaction-info">
-                                    <div class="transaction-type">
-                                        <?php if ($transaction['type'] === 'credit'): ?>
-                                            <span class="transaction-icon credit">💰</span>
-                                        <?php else: ?>
-                                            <span class="transaction-icon debit">💸</span>
-                                        <?php endif; ?>
-                                        <div class="transaction-details">
-                                            <div class="transaction-title">
-                                                <?= htmlspecialchars($transaction['description'] ?? 'Transaction') ?>
-                                            </div>
-                                            <div class="transaction-date">
-                                                <?= $transaction['date_formatted'] ?>
-                                            </div>
-                                        </div>
+                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+                    <span class="font-semibold text-gray-700">Statut du compte :</span>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider <?= strtolower($user['statut_compte'] ?? 'actif') === 'actif' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' ?>">
+                        <?= htmlspecialchars($user['statut_compte'] ?? 'ACTIF') ?>
+                    </span>
+                </div>
+                
+                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+                    <span class="font-semibold text-gray-700">Type de compte :</span>
+                    <span class="font-mono text-gray-600 bg-white px-3 py-1 rounded-lg">COMPTE PRIMAIRE</span>
+                </div>
+                
+                <div class="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
+                    <span class="font-semibold text-gray-700">Date de création :</span>
+                    <span class="font-mono text-gray-600 bg-white px-3 py-1 rounded-lg"><?= date('d/m/Y') ?></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Balance Card -->
+        <div class="bg-gradient-to-br from-primary to-primary-light text-white rounded-2xl shadow-2xl p-8 mb-8 text-center relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+            <div class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
+            
+            <div class="relative z-10">
+                <div class="text-xl font-medium mb-4 text-white/90">Solde du compte principal</div>
+                <div class="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+                    <?= number_format($user['solde'] ?? 0, 0, ',', ' ') ?> FCFA
+                </div>
+                <?php //if ($user['numero']): ?>
+                    <!-- <div class="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-xl font-mono text-lg tracking-wider inline-block">
+                        N° <?= htmlspecialchars($user['numero']) ?>
+                    </div> -->
+                <?php //endif; ?>
+            </div>
+        </div>
+
+        <!-- Actions Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 text-center cursor-pointer hover:-translate-y-2 border border-gray-100 group" onclick="showAction('transfer')">
+                <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">💸</div>
+                <div class="text-lg font-bold text-gray-800 mb-2">Effectuer un transfert</div>
+                <div class="text-sm text-gray-600">Envoyer de l'argent rapidement et en sécurité</div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 text-center cursor-pointer hover:-translate-y-2 border border-gray-100 group" onclick="showAction('payment')">
+                <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">💳</div>
+                <div class="text-lg font-bold text-gray-800 mb-2">Paiement</div>
+                <div class="text-sm text-gray-600">Payer vos factures et services</div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 text-center cursor-pointer hover:-translate-y-2 border border-gray-100 group" onclick="showAction('history')">
+                <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">📊</div>
+                <div class="text-lg font-bold text-gray-800 mb-2">Historique</div>
+                <div class="text-sm text-gray-600">Consulter vos transactions</div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 text-center cursor-pointer hover:-translate-y-2 border border-gray-100 group" onclick="showAction('deposit')">
+                <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">💰</div>
+                <div class="text-lg font-bold text-gray-800 mb-2">Dépôt</div>
+                <div class="text-sm text-gray-600">Alimenter votre compte</div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <h3 class="text-2xl font-bold text-primary mb-6 flex items-center gap-3">
+                <span class="text-2xl">📊</span>
+                Dernières transactions
+            </h3>
+            
+            <?php if (empty($recentTransactions)): ?>
+                <div class="text-center py-16">
+                    <div class="text-6xl mb-6 opacity-50">💳</div>
+                    <p class="text-xl text-gray-600 mb-2">Aucune transaction pour le moment</p>
+                    <p class="text-gray-500">Vos futures transactions apparaîtront ici</p>
+                </div>
+            <?php else: ?>
+                <div class="space-y-4 max-h-96 overflow-y-auto">
+                    <?php foreach ($recentTransactions as $transaction): ?>
+                        <div class="flex items-center justify-between p-4 hover:bg-gray-50 rounded-xl transition-colors duration-200">
+                            <div class="flex items-center gap-4">
+                                <?php if ($transaction['type'] === 'credit'): ?>
+                                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-xl">💰</div>
+                                <?php else: ?>
+                                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-xl">💸</div>
+                                <?php endif; ?>
+                                
+                                <div>
+                                    <div class="font-semibold text-gray-800">
+                                        <?= htmlspecialchars($transaction['description'] ?? 'Transaction') ?>
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        <?= $transaction['date_formatted'] ?>
                                     </div>
                                 </div>
-                                <div class="transaction-amount <?= $transaction['type'] ?>">
-                                    <?= $transaction['montant_formatted'] ?>
-                                </div>
                             </div>
-                        <?php endforeach; ?>
-                    </div>
-                    
-                    <div class="view-all-transactions">
-                        <a href="/transactions" class="view-all-btn">
-                            Voir toutes les transactions →
-                        </a>
-                    </div>
-                <?php endif; ?>
-            </div>
+                            
+                            <div class="font-bold text-lg font-mono <?= $transaction['type'] === 'credit' ? 'text-green-600' : 'text-red-600' ?>">
+                                <?= $transaction['montant_formatted'] ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200 text-center">
+                    <a href="/transactions" class="inline-flex items-center gap-2 text-primary hover:text-primary-dark font-semibold px-6 py-3 rounded-lg hover:bg-orange-50 transition-colors duration-200">
+                        Voir toutes les transactions
+                        <span class="text-lg">→</span>
+                    </a>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 

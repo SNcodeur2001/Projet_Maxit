@@ -189,10 +189,12 @@ class SecurityController extends AbstractController
             exit;
         }
 
-        $telephone = trim($_POST['loginTelephone']);
-        $user = $this->userRepository->findByTelephone($telephone);
+        $login = trim($_POST['loginTelephone']); // Peut être téléphone OU numéro de compte
 
-      if ($user) {
+// 1. Essayer par téléphone (utilisateur principal)
+$user = $this->userRepository->findByTelephone($login);
+
+if ($user) {
     $this->session->set('user', [
         'id' => $user['id'],
         'prenom' => $user['prenom'],
@@ -200,15 +202,36 @@ class SecurityController extends AbstractController
         'telephone' => $user['telephone'],
         'profil' => $user['profil'] ?? 'client'
     ]);
-
-    // 🎯 Redirection personnalisée
     if ($user['profil'] === 'SERVICE_COMMERCIAL') {
         header('Location: /dashboard-gestionnaire');
     } else {
         header('Location: /dashboard-client');
     }
     exit;
+}
+
+// 2. Essayer par numéro de compte (primaire ou secondaire)
+$compteRepo = \App\Core\App::getDependency('compteRepository');
+$compte = $compteRepo->findByNumeroCompte($login); // <-- AJOUTE cette méthode si besoin
+
+if ($compte) {
+    $user = $this->userRepository->findById($compte['utilisateur_id']);
+    if ($user) {
+        // Ajoute les infos du compte à la session
+        $user['numero_compte'] = $compte['numero'];
+        $user['solde'] = $compte['solde'];
+        $user['statut_compte'] = $compte['statut'];
+        $this->session->set('user', $user);
+        $_SESSION['success'] = 'Connexion réussie (compte secondaire) !';
+        header('Location: /dashboard-client');
+        exit;
     }
+}
+
+// Si aucun utilisateur trouvé
+$_SESSION['errors'] = ['Aucun compte trouvé avec ce numéro de téléphone ou de compte'];
+header('Location: /');
+exit;
     }
 
     public function logout()

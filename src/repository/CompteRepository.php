@@ -58,6 +58,37 @@ class CompteRepository
     }
 
     /**
+     * Crée un compte secondaire pour un utilisateur
+     */
+    public function createCompteSecondaire(int $utilisateurId, string $telephone): array
+    {
+        try {
+            $numeroCompte = $this->generateNumeroCompte();
+            $sql = 'INSERT INTO compte (utilisateur_id, numero, solde, statut, telephone_secondaire) 
+                    VALUES (:utilisateur_id, :numero, :solde, :statut, :telephone)';
+            $stmt = $this->pdo->prepare($sql);
+            $result = $stmt->execute([
+                'utilisateur_id' => $utilisateurId,
+                'numero' => $numeroCompte,
+                'solde' => 0.00,
+                'statut' => 'COMPTE_SECONDAIRE',
+                'telephone' => $telephone
+            ]);
+            if ($result) {
+                return [
+                    'success' => true,
+                    'compte_id' => $this->pdo->lastInsertId(),
+                    'numero' => $numeroCompte
+                ];
+            }
+            return ['success' => false, 'message' => 'Erreur lors de la création'];
+        } catch (\PDOException $e) {
+            error_log("Erreur création compte secondaire: " . $e->getMessage());
+            return ['success' => false, 'message' => $e->getMessage()];
+        }
+    }
+
+    /**
      * Trouve un compte par l'ID utilisateur
      */
     public function findByUserId(int $utilisateurId): ?array
@@ -79,16 +110,21 @@ class CompteRepository
      */
     public function findByNumeroCompte(string $numeroCompte): ?array
     {
-        try {
-            $stmt = $this->pdo->prepare('SELECT * FROM compte WHERE numero = :numero');
-            $stmt->execute(['numero' => $numeroCompte]);
-            $compte = $stmt->fetch(PDO::FETCH_ASSOC);
+        $sql = "SELECT * FROM compte WHERE numero = :numero";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['numero' => $numeroCompte]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+    }
 
-            return $compte ?: null;
-        } catch (\PDOException $e) {
-            error_log("Erreur findByNumeroCompte: " . $e->getMessage());
-            return null;
-        }
+    /**
+     * Trouve un compte par son téléphone secondaire
+     */
+    public function findByTelephoneSecondaire(string $telephone): ?array
+    {
+        $sql = "SELECT * FROM compte WHERE telephone_secondaire = :telephone";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['telephone' => $telephone]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 
     /**
@@ -122,5 +158,46 @@ class CompteRepository
             error_log("Erreur updateSolde: " . $e->getMessage());
             return false;
         }
+    }
+
+   
+    public function selectAll(): array
+{
+    $sql = '
+        SELECT 
+            c.id,
+            c.numero,
+            c.solde,
+            c.statut,
+            u.nom AS nom_proprietaire,
+            u.prenom AS prenom_proprietaire
+        FROM compte c
+        JOIN utilisateur u ON u.id = c.utilisateur_id
+    ';
+    
+    $stmt = $this->pdo->query($sql);
+    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+}
+
+    /**
+     * Trouve tous les comptes par l'ID utilisateur
+     */
+    public function findAllByUserId(int $utilisateurId): array
+    {
+        $sql = "SELECT * FROM compte WHERE utilisateur_id = :utilisateur_id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['utilisateur_id' => $utilisateurId]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Trouve un compte par son ID
+     */
+    public function findById(int $id): ?array
+    {
+        $sql = "SELECT * FROM compte WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
 }

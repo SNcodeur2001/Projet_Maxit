@@ -15,3 +15,17 @@ Router::get('/dashboard-gestionnaire', CompteController::class, 'showDashboardGe
 
 Router::get('/transactions', CompteController::class, 'showAllTransactions', ['auth']);
 Router::get('/logout', CompteController::class, 'logout', ['auth']);
+
+// Formulaire de recherche de compte (par un gestionnaire)
+Router::get('/recherche-compte', CompteController::class, 'searchForm', ['auth']);
+
+// Traitement du formulaire (POST)
+Router::post('/recherche-compte', CompteController::class, 'handleSearch', ['auth']);
+
+// Voir toutes les transactions d’un compte spécifique avec filtres (par ID)
+Router::get('/compte/{id}/transactions', CompteController::class, 'showTransactions', ['auth']);
+Router::get('/comptes', CompteController::class, 'showAllComptes', ['auth']);
+Router::get('/ajouter-compte-secondaire', CompteController::class, 'showAddSecondaryAccount', ['auth']);
+Router::post('/ajouter-compte-secondaire', CompteController::class, 'handleAddSecondaryAccount', ['auth']);
+Router::post('/basculer-compte', CompteController::class, 'switchAccount', ['auth']);
+

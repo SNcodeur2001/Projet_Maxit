@@ -10,25 +10,37 @@ use App\Service\SmsService;
 use App\Repository\TransactionRepository;
 use App\Core\Session;
 use App\Core\App;
-
+use App\Service\CompteService;
 use Exception;
 
 class CompteController extends AbstractController
 {
     private UserRepository $userRepository;
-    private CompteRepository $compteRepository;
+    // private CompteRepository $compteRepository;
     private FileUploadService $fileUploadService;
     private SmsService $smsService;
+    private CompteService $compteService;
 
     public function __construct()
     {
         $this->userRepository = App::getDependency('userRepository');
-        $this->compteRepository = App::getDependency('compteRepository');
+        // $this->compteRepository = App::getDependency('compteRepository');
         $this->fileUploadService = App::getDependency('fileUploadService');
         $this->smsService = App::getDependency('smsService');
+        // $this->compteService = App::getDependency('compteService');
     }
 
     
+
+    public function showAllComptes()
+{
+
+    $comptes = $this->compteService->showComptes();
+
+    // On passe $comptes à la vue
+    $this->renderHtml('dashboardGestionnaire.php',$comptes);
+}
+
 
     /**
      * Affiche la page d'accueil avec les formulaires
@@ -387,6 +399,8 @@ private function formatMontant($type, $montant)
         return $errors;
     }
 
+    
+
   
 
      public function store(){
@@ -409,4 +423,71 @@ private function formatMontant($type, $montant)
      public function edit(){
 
      }
+
+     public function showAddSecondaryAccount()
+{
+    Session::requireAuth();
+    $user = $_SESSION['user'];
+    if ($user['profil'] !== 'CLIENT') {
+        header('Location: /unauthorized');
+        exit;
+    }
+    require_once dirname(__DIR__, 2) . '/templates/addSecondaryAccount.php';
+}
+
+public function handleAddSecondaryAccount()
+{
+    Session::requireAuth();
+    $user = $_SESSION['user'];
+    if ($user['profil'] !== 'CLIENT') {
+        header('Location: /unauthorized');
+        exit;
+    }
+
+    $telephone = trim($_POST['telephone'] ?? '');
+    $errors = [];
+
+    // Validation du téléphone
+    if (empty($telephone)) {
+        $errors[] = "Le numéro de téléphone est requis";
+    } elseif (!preg_match('/^(\+221|7[056789])[0-9]{7}$/', $telephone)) {
+        $errors[] = "Le numéro de téléphone doit être au format sénégalais";
+    }
+
+    if (!empty($errors)) {
+        $_SESSION['errors'] = $errors;
+        header('Location: /ajouter-compte-secondaire');
+        exit;
+    }
+
+    $compteRepo = \App\Core\App::getDependency('compteRepository');
+    $result = $compteRepo->createCompteSecondaire($user['id'], $telephone);
+
+    if ($result['success']) {
+        $_SESSION['success'] = 'Compte secondaire créé avec succès !';
+    } else {
+        $_SESSION['errors'] = [$result['message'] ?? 'Erreur lors de la création du compte secondaire'];
+    }
+    header('Location: /dashboard-client');
+    exit;
+}
+
+
+public function switchAccount()
+{
+    Session::requireAuth();
+    $user = $_SESSION['user'];
+    $compteId = $_POST['compte_id'] ?? null;
+    if (!$compteId) {
+        header('Location: /dashboard-client');
+        exit;
+    }
+    $compteRepo = \App\Core\App::getDependency('compteRepository');
+    $compte = $compteRepo->findById($compteId);
+    if ($compte && $compte['utilisateur_id'] == $user['id']) {
+        $_SESSION['compte_actif'] = $compte;
+    }
+    header('Location: /dashboard-client');
+    exit;
+}
 }

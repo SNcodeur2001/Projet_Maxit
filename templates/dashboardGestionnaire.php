@@ -105,79 +105,35 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Jane Cooper</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">(225) 555-0118</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">jane@microsoft.com</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">United States</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Principal</span>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Floyd Miles</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">(205) 555-0100</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">floyd@yahoo.com</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Kiribati</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Secondaire</span>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Ronald Richards</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">(302) 555-0107</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">ronald@adobe.com</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Israel</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Secondaire</span>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Marvin McKinney</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">(252) 555-0126</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">marvin@tesla.com</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Iran</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Principal</span>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Jerome Bell</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">(629) 555-0129</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">jerome@google.com</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Réunion</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Principal</span>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Kathryn Murphy</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">(406) 555-0120</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">kathryn@microsoft.com</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Curaçao</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Principal</span>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Jacob Jones</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">(208) 555-0112</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">jacob@yahoo.com</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Brazil</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Principale</span>
-                                </td>
-                            </tr>
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Kristin Watson</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">(704) 555-0127</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">kristin@facebook.com</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">Åland Islands</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Secondaire</span>
-                                </td>
-                            </tr>
-                        </tbody>
+    <?php foreach ($comptes as $compte): ?>
+        <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <?= htmlspecialchars($compte['nom_proprietaire'] . ' ' . $compte['prenom_proprietaire']) ?>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <?= htmlspecialchars($compte['numero']) ?>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <?= number_format($compte['solde'], 0, ',', ' ') ?> FCFA
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <?= ucfirst(strtolower($compte['statut'])) ?>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+                <?php if (strtoupper($compte['statut']) === 'ACTIF'): ?>
+                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        Actif
+                    </span>
+                <?php else: ?>
+                    <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                        Inactif
+                    </span>
+                <?php endif; ?>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+</tbody>
+
                     </table>
                 </div>
                 

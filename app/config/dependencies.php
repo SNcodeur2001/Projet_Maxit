@@ -10,6 +10,7 @@ use App\Controller\SecurityController;
 use App\Controller\CompteController;
 use App\Repository\TransactionRepository;
 use App\Service\SmsService;
+use App\Service\CompteService;
 
 return [
     "core" => [
@@ -22,6 +23,7 @@ return [
     "services" => [
         "fileUploadService" => fn() => new FileUploadService(),
         "smsService" => fn() => new SmsService(),
+        "compteService" => fn() => new CompteService(),
     ],
 
     "repositories" => [

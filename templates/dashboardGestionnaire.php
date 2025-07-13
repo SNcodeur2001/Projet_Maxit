@@ -1,3 +1,8 @@
+<?php
+// Pour éviter l'erreur si $comptes n'est pas défini
+$comptes = $comptes ?? [];
+$user = $user ?? $_SESSION['user'];
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>

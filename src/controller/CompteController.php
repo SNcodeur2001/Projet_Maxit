@@ -256,10 +256,11 @@ public function showDashboardGestion()
         exit;
     }
 
-    // Exemple : afficher tous les comptes existants
-    // $compteRepo = App::getDependency('compteRepository');
-    // $comptes = $compteRepo->findAll(); // méthode à adapter si besoin
-    require_once dirname(__DIR__, 2) . '/templates/dashboardGestionnaire.php';
+    $compteRepo = \App\Core\App::getDependency('compteRepository');
+    $comptes = $compteRepo->selectAll();
+
+    // Passe $user et $comptes à la vue
+    require dirname(__DIR__, 2) . '/templates/dashboardGestionnaire.php';
 }
 
 

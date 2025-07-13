@@ -10,9 +10,8 @@ Router::post('/login', SecurityController::class, 'login');
 Router::post('/register', CompteController::class, 'register');
 
 // Routes protégées (nécessitent une authentification)
-Router::get('/dashboard', CompteController::class, 'showDashboard', ['auth']);
+Router::get('/dashboard-client', CompteController::class, 'showDashboardClient', ['auth']);
+Router::get('/dashboard-gestionnaire', CompteController::class, 'showDashboardGestion', ['auth']);
+
 Router::get('/transactions', CompteController::class, 'showAllTransactions', ['auth']);
 Router::get('/logout', CompteController::class, 'logout', ['auth']);
-
-// Résoudre la route
-// Router::resolve();

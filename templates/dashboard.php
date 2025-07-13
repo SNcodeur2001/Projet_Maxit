@@ -42,7 +42,7 @@ unset($_SESSION['success']);
                     <div>
                         <div class="text-xl font-bold"><?= htmlspecialchars($user['prenom'] . ' ' . $user['nom']) ?></div>
                         <div class="text-white/90 text-sm">
-                            Compte <?= ucfirst($user['type']) ?> • <?= htmlspecialchars($user['telephone']) ?>
+                            Compte <?= ucfirst($user['profil']) ?> • <?= htmlspecialchars($user['telephone']) ?>
                         </div>
                     </div>
                 </div>

@@ -192,23 +192,23 @@ class SecurityController extends AbstractController
         $telephone = trim($_POST['loginTelephone']);
         $user = $this->userRepository->findByTelephone($telephone);
 
-        if ($user) {
-            // Connexion réussie
-            $this->session->set('user', [
-                'id' => $user['id'],
-                'prenom' => $user['prenom'],
-                'nom' => $user['nom'],
-                'telephone' => $user['telephone'],
-                'type' => $user['type'] ?? 'client'
-            ]);
+      if ($user) {
+    $this->session->set('user', [
+        'id' => $user['id'],
+        'prenom' => $user['prenom'],
+        'nom' => $user['nom'],
+        'telephone' => $user['telephone'],
+        'profil' => $user['profil'] ?? 'client'
+    ]);
 
-            header('Location: /dashboard');
-            exit;
-        } else {
-            $this->session->set('errors', ['loginTelephone' => ValidationMessages::TELEPHONE_UNKNOWN->value]);
-            header('Location: /');
-            exit;
-        }
+    // 🎯 Redirection personnalisée
+    if ($user['profil'] === 'SERVICE_COMMERCIAL') {
+        header('Location: /dashboard-gestionnaire');
+    } else {
+        header('Location: /dashboard-client');
+    }
+    exit;
+    }
     }
 
     public function logout()
@@ -233,7 +233,7 @@ class SecurityController extends AbstractController
             mkdir($uploadDir, 0755, true);
         }
 
-        // Générer un nom unique pour le fichier
+        // Générer un nom unique pour le fichiera
         $fileExtension = pathinfo($_FILES[$fieldName]['name'], PATHINFO_EXTENSION);
         $fileName = uniqid() . '_' . time() . '.' . $fileExtension;
         $filePath = $uploadDir . $fileName;

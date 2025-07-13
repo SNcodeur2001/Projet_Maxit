@@ -39,7 +39,7 @@ class CompteController extends AbstractController
         
         // Vérifier si l'utilisateur est déjà connecté
         if (isset($_SESSION['user'])) {
-            $this->showDashboard();
+            $this->showDashboardClient();
             return;
         }
 
@@ -205,20 +205,20 @@ class CompteController extends AbstractController
     /**
      * Affiche le dashboard de l'utilisateur
      */
-   public function showDashboard()
+public function showDashboardClient()
 {
     Session::requireAuth();
-    
     $user = $_SESSION['user'];
-    
-    // Récupérer toutes les transactions avec selectAll()
+    if ($user['profil'] !== 'CLIENT') {
+        header('Location: /unauthorized');
+        exit;
+    }
+
     $transactionRepo = App::getDependency('transactionRepository');
     $allTransactions = $transactionRepo->selectAll();
-    
-    // Filtrer les transactions de l'utilisateur connecté et formater
+
     $recentTransactions = [];
     foreach ($allTransactions as $transaction) {
-        // Filtrer par compte_id de l'utilisateur connecté
         if ($transaction['compte_id'] == $user['id']) {
             $recentTransactions[] = [
                 'type' => in_array($transaction['type'], ['DEPOT', 'TRANSFERT_RECU']) ? 'credit' : 'debit',
@@ -228,13 +228,28 @@ class CompteController extends AbstractController
             ];
         }
     }
-    
-    // Limiter aux 10 dernières si vous voulez
+
     $recentTransactions = array_slice($recentTransactions, 0, 10);
-    
-    // ALTERNATIVE : Utiliser le chemin depuis la racine du projet
+
     require_once dirname(__DIR__, 2) . '/templates/dashboard.php';
 }
+
+
+public function showDashboardGestion()
+{
+    Session::requireAuth();
+    $user = $_SESSION['user'];
+    if ($user['profil'] !== 'SERVICE_COMMERCIAL') {
+        header('Location: /unauthorized');
+        exit;
+    }
+
+    // Exemple : afficher tous les comptes existants
+    // $compteRepo = App::getDependency('compteRepository');
+    // $comptes = $compteRepo->findAll(); // méthode à adapter si besoin
+    require_once dirname(__DIR__, 2) . '/templates/dashboardGestionnaire.php';
+}
+
 
 // AJOUTER : Méthodes helper pour le formatage
 private function getTransactionDescription($type)
@@ -312,7 +327,7 @@ private function formatMontant($type, $montant)
             'nom' => $user['nom'],
             'prenom' => $user['prenom'],
             'telephone' => $user['telephone'],
-            'type' => $user['type'] ?? 'client',
+            'profil' => $user['profil'] ?? 'CLIENT',
             'numero_compte' => $user['numero_compte'] ?? null,
             'solde' => $user['solde'] ?? 0.00,
             'statut_compte' => $user['statut_compte'] ?? 'ACTIF'

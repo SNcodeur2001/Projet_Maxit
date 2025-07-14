@@ -491,4 +491,72 @@ public function switchAccount()
     header('Location: /dashboard-client');
     exit;
 }
+// Affiche le formulaire de recherche
+public function searchForm()
+{
+    Session::requireAuth();
+    $user = $_SESSION['user'];
+    if ($user['profil'] !== 'SERVICE_COMMERCIAL') {
+        header('Location: /unauthorized');
+        exit;
+    }
+    require_once dirname(__DIR__, 2) . '/templates/rechercheCompte.php';
+}
+
+// Traite la recherche et affiche le solde + 10 dernières transactions
+public function handleSearch()
+{
+    Session::requireAuth();
+    $user = $_SESSION['user'];
+    if ($user['profil'] !== 'SERVICE_COMMERCIAL') {
+        header('Location: /unauthorized');
+        exit;
+    }
+
+    $numero = trim($_POST['numero_compte'] ?? '');
+    $compteRepo = \App\Core\App::getDependency('compteRepository');
+    $transactionRepo = \App\Core\App::getDependency('transactionRepository');
+    $compte = $compteRepo->findByNumeroCompte($numero);
+
+    if (!$compte) {
+        $_SESSION['errors'] = ['Aucun compte trouvé avec ce numéro'];
+        header('Location: /recherche-compte');
+        exit;
+    }
+
+    $transactions = $transactionRepo->getRecentTransactionsByCompte($compte['id'], 10);
+
+    require_once dirname(__DIR__, 2) . '/templates/detailCompte.php';
+}
+public function showTransactions($id)
+{
+    Session::requireAuth();
+    $user = $_SESSION['user'];
+    if ($user['profil'] !== 'SERVICE_COMMERCIAL') {
+        header('Location: /unauthorized');
+        exit;
+    }
+    $type = $_GET['type'] ?? null;
+    $dateStart = $_GET['dateStart'] ?? null;
+    $dateEnd = $_GET['dateEnd'] ?? null;
+    $compteRepo = \App\Core\App::getDependency('compteRepository');
+    $transactionRepo = \App\Core\App::getDependency('transactionRepository');
+    $compte = $compteRepo->findById($id);
+    $transactions = $transactionRepo->getAllTransactionsByCompte($id, $type, $dateStart, $dateEnd);
+    require_once dirname(__DIR__, 2) . '/templates/transactionsCompte.php';
+}
+public function showCompteDetail($id)
+{
+    Session::requireAuth();
+    $user = $_SESSION['user'];
+    if ($user['profil'] !== 'SERVICE_COMMERCIAL') {
+        header('Location: /unauthorized');
+        exit;
+    }
+    $compteRepo = \App\Core\App::getDependency('compteRepository');
+    $transactionRepo = \App\Core\App::getDependency('transactionRepository');
+    $compte = $compteRepo->findById($id);
+    $transactions = $transactionRepo->getRecentTransactionsByCompte($id, 10);
+    require_once dirname(__DIR__, 2) . '/templates/detailCompte.php';
+}
 }

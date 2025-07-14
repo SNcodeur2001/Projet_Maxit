@@ -41,6 +41,10 @@ $user = $user ?? $_SESSION['user'];
                         <i class="fas fa-list"></i>
                         <span>Lister comptes</span>
                     </a>
+                    <a href="/recherche-compte" class="flex items-center space-x-3 px-3 py-2 text-orange-200 hover:bg-orange-600 rounded">
+                        <i class="fas fa-search"></i>
+                        <span>Rechercher un compte</span>
+                    </a>
                     <a href="#" class="flex items-center space-x-3 px-3 py-2 text-orange-200 hover:bg-orange-600 rounded">
                         <i class="fas fa-plus-circle"></i>
                         <span>Ajouter Article</span>
@@ -107,6 +111,7 @@ $user = $user ?? $_SESSION['user'];
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Country</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -135,6 +140,9 @@ $user = $user ?? $_SESSION['user'];
                     </span>
                 <?php endif; ?>
             </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+    <a href="/compte/<?= $compte['id'] ?>/detail" class="text-blue-600 hover:underline font-semibold">Détail</a>
+</td>
         </tr>
     <?php endforeach; ?>
 </tbody>

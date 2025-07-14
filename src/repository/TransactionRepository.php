@@ -5,11 +5,15 @@ namespace App\Repository;
 use App\Core\Abstract\AbstractRepository;
 use App\Core\Abstract\Database;
 use App\Entity\Transaction;
-
+use Pdo;
 class TransactionRepository extends AbstractRepository
 {
 
-    
+    private PDO $pdo;
+    public function __construct()
+    {
+        $this->pdo = Database::getConnection();
+    }
     /**
      * Récupère les dernières transactions d'un utilisateur
      * 
@@ -19,7 +23,6 @@ class TransactionRepository extends AbstractRepository
      */
     public function getRecentTransactionsByUser(int $userId, int $limit = 10): array
     {
-        $pdo = Database::getConnection();
         
         // CORRECTION : Utilisation de TO_CHAR pour PostgreSQL au lieu de DATE_FORMAT
         $sql = "SELECT t.*, 
@@ -76,7 +79,37 @@ class TransactionRepository extends AbstractRepository
     }
     
 
-    
+public function getRecentTransactionsByCompte($compteId, $limit = 10)
+{
+    $sql = "SELECT * FROM transaction WHERE compte_id = :compte_id ORDER BY created_at DESC LIMIT :limit";
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->bindValue(':compte_id', $compteId, \PDO::PARAM_INT);
+    $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+}
+
+public function getAllTransactionsByCompte($compteId, $type = null, $dateStart = null, $dateEnd = null)
+{
+    $sql = "SELECT * FROM transaction WHERE compte_id = :compte_id";
+    $params = ['compte_id' => $compteId];
+    if ($type) {
+        $sql .= " AND type = :type";
+        $params['type'] = $type;
+    }
+    if ($dateStart) {
+        $sql .= " AND created_at >= :dateStart";
+        $params['dateStart'] = $dateStart;
+    }
+    if ($dateEnd) {
+        $sql .= " AND created_at <= :dateEnd";
+        $params['dateEnd'] = $dateEnd . ' 23:59:59';
+    }
+    $sql .= " ORDER BY created_at DESC";
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+}
     public function insert() { /* implémentation */ }
     public function update() { /* implémentation */ }
     public function delete() { /* implémentation */ }

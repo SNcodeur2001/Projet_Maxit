@@ -23,6 +23,7 @@ Router::get('/recherche-compte', CompteController::class, 'searchForm', ['auth']
 Router::post('/recherche-compte', CompteController::class, 'handleSearch', ['auth']);
 
 // Voir toutes les transactions d’un compte spécifique avec filtres (par ID)
+Router::get('/compte/{id}/detail', CompteController::class, 'showCompteDetail', ['auth']);
 Router::get('/compte/{id}/transactions', CompteController::class, 'showTransactions', ['auth']);
 Router::get('/comptes', CompteController::class, 'showAllComptes', ['auth']);
 Router::get('/ajouter-compte-secondaire', CompteController::class, 'showAddSecondaryAccount', ['auth']);

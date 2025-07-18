@@ -18,6 +18,21 @@ class Auth
             exit();
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
         // Optionnel : Vérifier que les données utilisateur sont complètes
         if (!isset($_SESSION['user']['id']) || empty($_SESSION['user']['id'])) {
             // Session corrompue, déconnecter
@@ -29,6 +44,13 @@ class Auth
         // Optionnel : Vérifier si le compte est toujours actif
         $this->validateUserStatus();
     }
+
+
+
+
+
+
+
 
     /**
      * Valider le statut de l'utilisateur

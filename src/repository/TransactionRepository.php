@@ -37,7 +37,7 @@ class TransactionRepository extends AbstractRepository
                 ORDER BY t.created_at DESC 
                 LIMIT :limit";
         
-        $stmt = $pdo->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':compte_id', $userId, \PDO::PARAM_INT);
         $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
         $stmt->execute();

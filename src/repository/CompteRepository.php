@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Core\Abstract\Database;
+use App\Entity\Compte;
 use PDO;
 
 class CompteRepository
@@ -200,4 +201,34 @@ class CompteRepository
         $stmt->execute(['id' => $id]);
         return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
     }
+
+public function getPaginatedComptes(int $limit, int $offset): array
+{
+    $sql = '
+        SELECT 
+            c.id,
+            c.numero,
+            c.solde,
+            c.statut,
+            u.nom AS nom_proprietaire,
+            u.prenom AS prenom_proprietaire,
+            u.telephone
+        FROM compte c
+        JOIN utilisateur u ON u.id = c.utilisateur_id
+        ORDER BY c.id DESC
+        LIMIT :limit OFFSET :offset
+    ';
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+}
+
+public function countAllComptes(): int
+{
+    $sql = "SELECT COUNT(*) FROM compte";
+    $stmt = $this->pdo->query($sql);
+    return (int) $stmt->fetchColumn();
+}
 }

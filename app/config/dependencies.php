@@ -11,6 +11,7 @@ use App\Controller\CompteController;
 use App\Repository\TransactionRepository;
 use App\Service\SmsService;
 use App\Service\CompteService;
+use App\Controller\TransactionController;
 
 return [
     "core" => [
@@ -35,5 +36,6 @@ return [
     "controllers" => [
         "securityController" => fn() => new SecurityController(),
         "compteController" => fn() => new CompteController(),
+        "transactionController" => fn() => new TransactionController(),
     ]
 ];

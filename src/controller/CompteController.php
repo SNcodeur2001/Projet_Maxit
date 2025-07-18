@@ -32,13 +32,23 @@ class CompteController extends AbstractController
 
     
 
-    public function showAllComptes()
+public function showAllComptes()
 {
+    $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+    $perPage = 5;
+    $offset = ($page - 1) * $perPage;
 
-    $comptes = $this->compteService->showComptes();
+    $compteRepo = \App\Core\App::getDependency('compteRepository');
+    $comptes = $compteRepo->getPaginatedComptes($perPage, $offset);
+    $totalComptes = $compteRepo->countAllComptes();
+    $totalPages = ceil($totalComptes / $perPage);
 
-    // On passe $comptes à la vue
-    $this->renderHtml('dashboardGestionnaire.php',$comptes);
+    $this->renderHtml('dashboardGestionnaire.php', [
+        'comptes' => $comptes,
+        'totalPages' => $totalPages,
+        'currentPage' => $page,
+        'user' => $_SESSION['user']
+    ]);
 }
 
 
@@ -530,7 +540,7 @@ public function handleSearch()
 }
 public function showTransactions($id)
 {
-    Session::requireAuth();
+    // Session::requireAuth();
     $user = $_SESSION['user'];
     if ($user['profil'] !== 'SERVICE_COMMERCIAL') {
         header('Location: /unauthorized');

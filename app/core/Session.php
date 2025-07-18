@@ -24,7 +24,7 @@ class Session
         $_SESSION[$key] = $value;
     }
 
-    public function get(string $key)
+    public static function get(string $key)
     {
         return $_SESSION[$key] ?? null;
     }

@@ -161,7 +161,7 @@ class SecurityController extends AbstractController
     {
         // Si l'utilisateur est déjà connecté, rediriger vers le dashboard
         if ($this->session->has('user')) {
-            header('Location: /dashboard');
+            header('Location: /dashboard-client');
             exit;
         }
 

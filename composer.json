@@ -21,5 +21,10 @@
     "require": {
         "vlucas/phpdotenv": "^5.6",
         "twilio/sdk": "^8.6"
-    }
+    },
+    "scripts": {
+    "database:migrate": "php migrations/migration.php",
+    "seeder:migrate":"php seeders/seeder.php",
+    "start": "php -S localhost:8000 -t public"
+}
 }

@@ -1,60 +1,141 @@
 <?php
 class Migration {
     private PDO $pdo;
+    private string $driver;
     
-    public function __construct(string $host, string $user, string $pass, string $dbName) {
-        $this->pdo = new PDO("pgsql:host=$host;dbname=$dbName", $user, $pass);
+    public function __construct() {
+        $this->loadEnv();
+        $this->driver = $_ENV['DB_DRIVER'] ?? 'pgsql';
+        // ⚠️ NE PAS initialiser la connexion ici
+    }
+    
+    private function loadEnv(): void {
+        $envFile = dirname(__DIR__) . '/.env';
+        if (file_exists($envFile)) {
+            $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            foreach ($lines as $line) {
+                if (str_starts_with(trim($line), '#') || !str_contains($line, '=')) continue;
+                [$key, $value] = explode('=', $line, 2);
+                $_ENV[trim($key)] = trim($value);
+            }
+        }
+    }
+    
+    // 🔧 NOUVELLE MÉTHODE : Connexion à la base par défaut
+    private function connectToDefaultDatabase(): PDO {
+        $host = $_ENV['DB_HOST'] ?? 'localhost';
+        $user = $_ENV['DB_USER'] ?? ($this->driver === 'pgsql' ? 'postgres' : 'root');
+        $pass = $_ENV['DB_PASSWORD'] ?? '';
+        
+        if ($this->driver === 'pgsql') {
+            $pdo = new PDO("pgsql:host=$host;dbname=postgres", $user, $pass);
+        } else {
+            $pdo = new PDO("mysql:host=$host", $user, $pass);
+        }
+        
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        return $pdo;
+    }
+    
+    // 🔧 MODIFIER : Méthode initializeConnection
+    private function initializeConnection(): void {
+        $host = $_ENV['DB_HOST'] ?? 'localhost';
+        $user = $_ENV['DB_USER'] ?? ($this->driver === 'pgsql' ? 'postgres' : 'root');
+        $pass = $_ENV['DB_PASSWORD'] ?? '';
+        $dbName = $_ENV['DB_NAME'] ?? 'maxitsa_db';
+        
+        if ($this->driver === 'pgsql') {
+            $this->pdo = new PDO("pgsql:host=$host;dbname=$dbName", $user, $pass);
+        } else {
+            $this->pdo = new PDO("mysql:host=$host;dbname=$dbName;charset=utf8mb4", $user, $pass);
+        }
+        
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
     
+    // 🔧 MODIFIER : Méthode createDatabase
     public function createDatabase(string $dbName): void {
-        // Pour PostgreSQL, nous devons nous connecter à une base existante pour créer une nouvelle base
-        $tempPdo = new PDO("pgsql:host=localhost;dbname=postgres", "postgres", "passer123");
-        $tempPdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        echo "🔧 Création de la base de données '$dbName' ($this->driver)...\n";
         
-        // Vérifier si la base existe déjà
-        $stmt = $tempPdo->prepare("SELECT 1 FROM pg_database WHERE datname = ?");
+        try {
+            if ($this->driver === 'pgsql') {
+                $this->createPostgreSQLDatabase($dbName);
+            } else {
+                $this->createMySQLDatabase($dbName);
+            }
+            
+            // Maintenant se connecter à la base créée
+            $this->initializeConnection();
+            echo "✅ Connexion à la base '$dbName' établie.\n";
+            
+        } catch (PDOException $e) {
+            throw new Exception("Erreur lors de la création/connexion à la base: " . $e->getMessage());
+        }
+    }
+    
+    // 🔧 MODIFIER : Méthode createPostgreSQLDatabase
+    private function createPostgreSQLDatabase(string $dbName): void {
+        $defaultPdo = $this->connectToDefaultDatabase();
+        
+        // Vérifier si la base existe
+        $stmt = $defaultPdo->prepare("SELECT 1 FROM pg_database WHERE datname = ?");
         $stmt->execute([$dbName]);
         
         if (!$stmt->fetch()) {
-            $tempPdo->exec("CREATE DATABASE \"$dbName\"");
-            echo "✅ Base de données '$dbName' créée.\n";
+            $defaultPdo->exec("CREATE DATABASE \"$dbName\"");
+            echo "✅ Base de données PostgreSQL '$dbName' créée.\n";
         } else {
-            echo "✅ Base de données '$dbName' existe déjà.\n";
+            echo "ℹ️ Base de données PostgreSQL '$dbName' existe déjà.\n";
         }
+    }
+    
+    // 🔧 MODIFIER : Méthode createMySQLDatabase
+    private function createMySQLDatabase(string $dbName): void {
+        $defaultPdo = $this->connectToDefaultDatabase();
         
-        // Reconnexion à la base nouvellement créée
-        $this->pdo = new PDO("pgsql:host=localhost;dbname=$dbName", "postgres", "passer123");
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $defaultPdo->exec("CREATE DATABASE IF NOT EXISTS `$dbName` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+        echo "✅ Base de données MySQL '$dbName' créée ou existe déjà.\n";
     }
     
     public function createTypes(): void {
-        echo "🔧 Création des types personnalisés...\n";
-        
-        $types = [
-            "CREATE TYPE profil_type AS ENUM ('CLIENT', 'SERVICE_COMMERCIAL')",
-            "CREATE TYPE statut_type AS ENUM ('COMPTE_PRINCIPAL', 'COMPTE_SECONDAIRE')",
-            "CREATE TYPE transaction_type AS ENUM ('DEPOT', 'RETRAIT', 'PAIEMENT')"
-        ];
-        
-        foreach ($types as $sql) {
-            try {
-                $this->pdo->exec($sql);
-            } catch (PDOException $e) {
-                // Ignorer si le type existe déjà
-                if (strpos($e->getMessage(), 'already exists') === false) {
-                    throw $e;
+        if ($this->driver === 'pgsql') {
+            echo "🔧 Création des types personnalisés PostgreSQL...\n";
+            
+            $types = [
+                "CREATE TYPE profil_type AS ENUM ('CLIENT', 'SERVICE_COMMERCIAL')",
+                "CREATE TYPE statut_type AS ENUM ('COMPTE_PRINCIPAL', 'COMPTE_SECONDAIRE')",
+                "CREATE TYPE transaction_type AS ENUM ('DEPOT', 'RETRAIT', 'PAIEMENT')"
+            ];
+            
+            foreach ($types as $sql) {
+                try {
+                    $this->pdo->exec($sql);
+                } catch (PDOException $e) {
+                    if (strpos($e->getMessage(), 'already exists') === false) {
+                        throw $e;
+                    }
                 }
             }
+            echo "✅ Types personnalisés PostgreSQL créés.\n";
+        } else {
+            echo "ℹ️ MySQL utilise des ENUM intégrés, pas de types personnalisés à créer.\n";
         }
-        echo "✅ Types personnalisés créés.\n";
     }
     
     public function createTables(): void {
-        echo "📋 Création des tables...\n";
+        echo "📋 Création des tables ($this->driver)...\n";
         
+        if ($this->driver === 'pgsql') {
+            $this->createPostgreSQLTables();
+        } else {
+            $this->createMySQLTables();
+        }
+        
+        echo "✅ Tables créées avec succès.\n";
+    }
+    
+    private function createPostgreSQLTables(): void {
         $tables = [
-            // Table utilisateur
             "CREATE TABLE IF NOT EXISTS utilisateur (
                 id SERIAL PRIMARY KEY,
                 nom VARCHAR(100) NOT NULL,
@@ -68,7 +149,6 @@ class Migration {
                 created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
             )",
             
-            // Table compte
             "CREATE TABLE IF NOT EXISTS compte (
                 id SERIAL PRIMARY KEY,
                 utilisateur_id INTEGER NOT NULL,
@@ -80,7 +160,6 @@ class Migration {
                 FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id) ON DELETE CASCADE
             )",
             
-            // Table transaction
             "CREATE TABLE IF NOT EXISTS transaction (
                 id SERIAL PRIMARY KEY,
                 compte_id INTEGER NOT NULL,
@@ -95,160 +174,195 @@ class Migration {
         foreach ($tables as $sql) {
             $this->pdo->exec($sql);
         }
-        echo "✅ Tables créées avec succès.\n";
+    }
+    
+    private function createMySQLTables(): void {
+        $tables = [
+            "CREATE TABLE IF NOT EXISTS utilisateur (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                nom VARCHAR(100) NOT NULL,
+                prenom VARCHAR(100) NOT NULL,
+                adresse VARCHAR(255),
+                telephone VARCHAR(20) NOT NULL UNIQUE,
+                numero_piece_identite VARCHAR(50) UNIQUE,
+                photo_recto VARCHAR(255),
+                photo_verso VARCHAR(255),
+                profil ENUM('CLIENT', 'SERVICE_COMMERCIAL') DEFAULT 'CLIENT' NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+            
+            "CREATE TABLE IF NOT EXISTS compte (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                utilisateur_id INT NOT NULL,
+                numero VARCHAR(20) NOT NULL UNIQUE,
+                solde DECIMAL(10,2) DEFAULT 0,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                statut ENUM('COMPTE_PRINCIPAL', 'COMPTE_SECONDAIRE') DEFAULT 'COMPTE_SECONDAIRE' NOT NULL,
+                telephone_secondaire VARCHAR(20),
+                FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+            
+            "CREATE TABLE IF NOT EXISTS transaction (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                compte_id INT NOT NULL,
+                type ENUM('DEPOT', 'RETRAIT', 'PAIEMENT') NOT NULL,
+                montant DECIMAL(10,2) NOT NULL,
+                libelle VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (compte_id) REFERENCES compte(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+        ];
+        
+        foreach ($tables as $sql) {
+            $this->pdo->exec($sql);
+        }
     }
     
     public function dropTables(): void {
         echo "🗑️ Suppression des tables existantes...\n";
         
+        if ($this->driver === 'mysql') {
+            $this->pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
+        }
+        
         $tables = ['transaction', 'compte', 'utilisateur'];
         foreach ($tables as $table) {
-            $this->pdo->exec("DROP TABLE IF EXISTS $table CASCADE");
+            if ($this->driver === 'pgsql') {
+                $this->pdo->exec("DROP TABLE IF EXISTS $table CASCADE");
+            } else {
+                $this->pdo->exec("DROP TABLE IF EXISTS $table");
+            }
+        }
+        
+        if ($this->driver === 'mysql') {
+            $this->pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
         }
         
         echo "✅ Tables supprimées.\n";
     }
     
     public function dropTypes(): void {
-        echo "🗑️ Suppression des types personnalisés...\n";
-        
-        $types = ['transaction_type', 'statut_type', 'profil_type'];
-        foreach ($types as $type) {
-            try {
-                $this->pdo->exec("DROP TYPE IF EXISTS $type CASCADE");
-            } catch (PDOException $e) {
-                // Ignorer les erreurs si le type n'existe pas ou est utilisé
+        if ($this->driver === 'pgsql') {
+            echo "🗑️ Suppression des types personnalisés PostgreSQL...\n";
+            
+            $types = ['transaction_type', 'statut_type', 'profil_type'];
+            foreach ($types as $type) {
+                try {
+                    $this->pdo->exec("DROP TYPE IF EXISTS $type CASCADE");
+                } catch (PDOException $e) {
+                    // Ignorer les erreurs
+                }
             }
+            
+            echo "✅ Types personnalisés supprimés.\n";
+        } else {
+            echo "ℹ️ MySQL n'utilise pas de types personnalisés à supprimer.\n";
         }
-        
-        echo "✅ Types personnalisés supprimés.\n";
     }
     
     public function showTables(): void {
-        echo "\n📋 Tables créées:\n";
-        $stmt = $this->pdo->query("
-            SELECT tablename 
-            FROM pg_tables 
-            WHERE schemaname = 'public' 
-            AND tablename IN ('utilisateur', 'compte', 'transaction')
-            ORDER BY tablename
-        ");
-        while ($row = $stmt->fetch()) {
-            echo "- " . $row['tablename'] . "\n";
-        }
+        echo "\n📋 Tables créées ($this->driver):\n";
         
-        echo "\n🔧 Types personnalisés:\n";
-        $stmt = $this->pdo->query("
-            SELECT typname 
-            FROM pg_type 
-            WHERE typname IN ('profil_type', 'statut_type', 'transaction_type')
-            ORDER BY typname
-        ");
-        while ($row = $stmt->fetch()) {
-            echo "- " . $row['typname'] . "\n";
-        }
-        
-        echo "\n📊 Structure des tables:\n";
-        $tables = ['utilisateur', 'compte', 'transaction'];
-        foreach ($tables as $table) {
-            echo "\n🔹 Table: $table\n";
+        if ($this->driver === 'pgsql') {
             $stmt = $this->pdo->query("
-                SELECT 
-                    column_name,
-                    data_type,
-                    is_nullable,
-                    column_default,
-                    character_maximum_length
-                FROM information_schema.columns 
-                WHERE table_name = '$table' 
-                AND table_schema = 'public'
-                ORDER BY ordinal_position
+                SELECT tablename 
+                FROM pg_tables 
+                WHERE schemaname = 'public' 
+                AND tablename IN ('utilisateur', 'compte', 'transaction')
+                ORDER BY tablename
             ");
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $length = $row['character_maximum_length'] ? "({$row['character_maximum_length']})" : '';
-                $nullable = $row['is_nullable'] === 'YES' ? 'NULL' : 'NOT NULL';
-                $default = $row['column_default'] ? "DEFAULT {$row['column_default']}" : '';
-                echo "  - {$row['column_name']} {$row['data_type']}{$length} {$nullable} {$default}\n";
+        } else {
+            $stmt = $this->pdo->query("SHOW TABLES");
+        }
+        
+        while ($row = $stmt->fetch()) {
+            echo "- " . ($row[0] ?? $row['tablename']) . "\n";
+        }
+        
+        if ($this->driver === 'pgsql') {
+            echo "\n🔧 Types personnalisés:\n";
+            $stmt = $this->pdo->query("
+                SELECT typname 
+                FROM pg_type 
+                WHERE typname IN ('profil_type', 'statut_type', 'transaction_type')
+                ORDER BY typname
+            ");
+            while ($row = $stmt->fetch()) {
+                echo "- " . $row['typname'] . "\n";
             }
         }
-        
-        echo "\n🔗 Contraintes et index:\n";
-        $stmt = $this->pdo->query("
-            SELECT 
-                tc.table_name,
-                tc.constraint_name,
-                tc.constraint_type
-            FROM information_schema.table_constraints tc
-            WHERE tc.table_schema = 'public' 
-            AND tc.table_name IN ('utilisateur', 'compte', 'transaction')
-            ORDER BY tc.table_name, tc.constraint_type
-        ");
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            echo "  - {$row['table_name']}: {$row['constraint_name']} ({$row['constraint_type']})\n";
-        }
-    }
-    
-    public function reset(): void {
-        echo "🔄 Réinitialisation complète de la base...\n";
-        $this->dropTables();
-        $this->dropTypes();
-        $this->createTypes();
-        $this->createTables();
-        echo "✅ Base réinitialisée.\n";
     }
     
     public function resetSequences(): void {
         echo "🔢 Réinitialisation des séquences...\n";
         
-        $sequences = [
-            'utilisateur_id_seq' => 1,
-            'compte_id_seq' => 1,
-            'transaction_id_seq' => 1
-        ];
-        
-        foreach ($sequences as $sequence => $value) {
-            $this->pdo->exec("SELECT setval('$sequence', $value, false)");
+        if ($this->driver === 'pgsql') {
+            $sequences = [
+                'utilisateur_id_seq' => 1,
+                'compte_id_seq' => 1,
+                'transaction_id_seq' => 1
+            ];
+            
+            foreach ($sequences as $sequence => $value) {
+                $this->pdo->exec("SELECT setval('$sequence', $value, false)");
+            }
+        } else {
+            // MySQL : Réinitialiser AUTO_INCREMENT
+            $this->pdo->exec("ALTER TABLE utilisateur AUTO_INCREMENT = 1");
+            $this->pdo->exec("ALTER TABLE compte AUTO_INCREMENT = 1");
+            $this->pdo->exec("ALTER TABLE transaction AUTO_INCREMENT = 1");
         }
         
-        echo "✅ Séquences réinitialisées.\n";
+        echo "✅ Séquences/AUTO_INCREMENT réinitialisés.\n";
+    }
+    
+    public function reset(): void {
+        echo "🔄 Réinitialisation complète de la base ($this->driver)...\n";
+        
+        $dbName = $_ENV['DB_NAME'] ?? 'maxitsa_db';
+        
+        // Créer la base si elle n'existe pas
+        $this->createDatabase($dbName);
+        
+        // Supprimer et recréer
+        $this->dropTables();
+        $this->dropTypes();
+        $this->createTypes();
+        $this->createTables();
+        
+        echo "✅ Base réinitialisée.\n";
     }
 }
 
-// 🔧 Configuration
-$host = 'localhost';
-$user = 'postgres';
-$pass = 'passer123';
-$dbName = 'maxitsa_db1';
-
-// 🚀 Exécution
+// 🚀 MODIFIER : Exécution
 try {
-    echo "🚀 Démarrage de la migration PostgreSQL (structure)...\n\n";
+    $driver = $_ENV['DB_DRIVER'] ?? 'pgsql';
+    $dbName = $_ENV['DB_NAME'] ?? 'maxitsa_db';
     
-    $migration = new Migration($host, $user, $pass, 'postgres');
-    $migration->createDatabase($dbName);
+    echo "🚀 Démarrage de la migration ($driver)...\n\n";
     
-    // Reconnexion à la nouvelle base
-    $migration = new Migration($host, $user, $pass, $dbName);
+    $migration = new Migration();
     
-    // Vérifier s'il faut réinitialiser ou créer
     if (isset($argv[1]) && $argv[1] === '--reset') {
         $migration->reset();
         $migration->resetSequences();
     } else {
+        $migration->createDatabase($dbName);
         $migration->createTypes();
         $migration->createTables();
     }
     
     $migration->showTables();
     
-    echo "\n🎉 Migration de structure PostgreSQL terminée avec succès.\n";
+    echo "\n🎉 Migration ($driver) terminée avec succès.\n";
     echo "💡 Utilisez maintenant le seeder pour remplir la base de données.\n";
     echo "💡 Pour réinitialiser : php migration.php --reset\n";
-    echo "💡 Base de données: $dbName\n";
-    echo "💡 Types personnalisés: profil_type, statut_type, transaction_type\n";
+    echo "💡 Base de données: $dbName ($driver)\n";
     
 } catch (PDOException $e) {
     echo "❌ Erreur : " . $e->getMessage() . "\n";
-    echo "💡 Vérifiez que PostgreSQL est démarré et que les identifiants sont corrects.\n";
-    echo "💡 Assurez-vous que l'utilisateur 'postgres' a les droits de création de base.\n";
+    echo "💡 Vérifiez que votre SGBD est démarré et que les identifiants sont corrects.\n";
+    echo "💡 Driver configuré : " . ($_ENV['DB_DRIVER'] ?? 'pgsql') . "\n";
+} catch (Exception $e) {
+    echo "❌ Erreur : " . $e->getMessage() . "\n";
 }

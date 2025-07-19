@@ -23,6 +23,12 @@ Router::get('/mes-transactions', CompteController::class, 'showMesTransactions',
 
 // Traitement du formulaire (POST)
 Router::post('/recherche-compte', CompteController::class, 'handleSearch', ['auth']);
+// Routes pour la gestion des comptes (ajouter avec les autres routes CLIENT)
+Router::get('/gestion-comptes', CompteController::class, 'showGestionComptes', ['auth']);
+
+
+
+Router::post('/make-compte-principal', CompteController::class, 'makeComptePrincipal', ['auth']);
 
 // Voir toutes les transactions d’un compte spécifique avec filtres (par ID)
 Router::get('/compte/{id}/detail', CompteController::class, 'showCompteDetail', ['auth']);

@@ -140,6 +140,22 @@ $recentTransactions = array_slice($recentTransactions, 0, 5);
                 <div class="text-lg font-bold text-gray-800 mb-2">Dépôt</div>
                 <div class="text-sm text-gray-600">Alimenter votre compte</div>
             </div>
+            <!-- Ajouter cette carte dans la section des actions rapides -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800">Gestion des comptes</h3>
+                        <p class="text-gray-600 text-sm">Gérer mes comptes</p>
+                    </div>
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
+                        <span class="text-white text-xl">⚙️</span>
+                    </div>
+                </div>
+                <a href="/gestion-comptes" class="inline-flex items-center gap-2 text-primary hover:text-primary-dark font-semibold">
+                    Gérer mes comptes
+                    <span class="text-lg">→</span>
+                </a>
+            </div>
         </div>
 
         <!-- Mes comptes -->

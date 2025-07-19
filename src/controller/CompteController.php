@@ -638,4 +638,76 @@ public function showCompteDetail($id)
     $transactions = $transactionRepo->getRecentTransactionsByCompte($id, 10);
     require_once dirname(__DIR__, 2) . '/templates/detailCompte.php';
 }
+
+/**
+ * Affiche la page de gestion des comptes
+ */
+public function showGestionComptes()
+{
+    Session::requireAuth();
+    $user = $_SESSION['user'];
+    
+    if ($user['profil'] !== 'CLIENT') {
+        header('Location: /unauthorized');
+        exit;
+    }
+    
+    $compteRepo = App::getDependency('compteRepository');
+    $comptes = $compteRepo->getComptesByUserId($user['id']);
+    
+    $errors = $_SESSION['errors'] ?? [];
+    $success = $_SESSION['success'] ?? '';
+    unset($_SESSION['errors'], $_SESSION['success']);
+    
+    require_once dirname(__DIR__, 2) . '/templates/gestionComptes.php';
+}
+
+/**
+ * Change un compte secondaire en compte principal
+ */
+public function makeComptePrincipal()
+{
+    Session::requireAuth();
+    $user = $_SESSION['user'];
+    
+    if ($user['profil'] !== 'CLIENT') {
+        header('Location: /unauthorized');
+        exit;
+    }
+    
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header('Location: /gestion-comptes');
+        exit;
+    }
+    
+    $compteId = $_POST['compte_id'] ?? null;
+    
+    if (!$compteId) {
+        $_SESSION['errors'] = ['ID du compte manquant'];
+        header('Location: /gestion-comptes');
+        exit;
+    }
+    
+    $compteRepo = App::getDependency('compteRepository');
+    $result = $compteRepo->makeComptePrincipal($compteId, $user['id']);
+    
+    if ($result['success']) {
+        // ✅ Mettre à jour la session avec le nouveau compte principal
+        $nouveauComptePrincipal = $compteRepo->findById($compteId);
+        if ($nouveauComptePrincipal) {
+            $_SESSION['user']['numero_compte'] = $nouveauComptePrincipal['numero'];
+            $_SESSION['user']['solde'] = $nouveauComptePrincipal['solde'];
+            $_SESSION['user']['statut_compte'] = $nouveauComptePrincipal['statut'];
+        }
+        
+        $_SESSION['success'] = $result['message'];
+    } else {
+        $_SESSION['errors'] = [$result['message']];
+    }
+    
+    header('Location: /gestion-comptes');
+    exit;
+}
+
+
 }

@@ -245,4 +245,81 @@ public function getComptePrincipalByUserId($userId)
     return $stmt->fetch();
 }
 
+/**
+ * Change un compte secondaire en compte principal
+ */
+public function makeComptePrincipal($compteId, $userId)
+{
+    try {
+        $this->pdo->beginTransaction();
+        
+        // 1. Vérifier que le compte appartient à l'utilisateur et qu'il est secondaire
+        $stmt = $this->pdo->prepare("
+            SELECT * FROM compte 
+            WHERE id = :compte_id AND utilisateur_id = :user_id AND statut = 'COMPTE_SECONDAIRE'
+        ");
+        $stmt->execute([
+            'compte_id' => $compteId,
+            'user_id' => $userId
+        ]);
+        
+        $compte = $stmt->fetch();
+        if (!$compte) {
+            throw new \Exception("Compte non trouvé ou déjà principal");
+        }
+        
+        // 2. Changer l'ancien compte principal en secondaire
+        $stmt = $this->pdo->prepare("
+            UPDATE compte 
+            SET statut = 'COMPTE_SECONDAIRE'
+            WHERE utilisateur_id = :user_id AND statut = 'COMPTE_PRINCIPAL'
+        ");
+        $stmt->execute(['user_id' => $userId]);
+        
+        // 3. Changer le compte sélectionné en principal
+        $stmt = $this->pdo->prepare("
+            UPDATE compte 
+            SET statut = 'COMPTE_PRINCIPAL'
+            WHERE id = :compte_id
+        ");
+        $stmt->execute(['compte_id' => $compteId]);
+        
+        $this->pdo->commit();
+        
+        return [
+            'success' => true,
+            'message' => 'Compte principal changé avec succès'
+        ];
+        
+    } catch (\Exception $e) {
+        $this->pdo->rollBack();
+        return [
+            'success' => false,
+            'message' => 'Erreur : ' . $e->getMessage()
+        ];
+    }
+}
+
+/**
+ * Récupère tous les comptes d'un utilisateur avec leur statut
+ */
+public function getComptesByUserId($userId)
+{
+    $stmt = $this->pdo->prepare("
+        SELECT c.*, 
+               CASE 
+                   WHEN c.statut = 'COMPTE_PRINCIPAL' THEN 'Principal' 
+                   ELSE 'Secondaire' 
+               END as type_compte
+        FROM compte c 
+        WHERE c.utilisateur_id = :user_id 
+        ORDER BY 
+            CASE WHEN c.statut = 'COMPTE_PRINCIPAL' THEN 0 ELSE 1 END,
+            c.created_at ASC
+    ");
+    $stmt->execute(['user_id' => $userId]);
+    return $stmt->fetchAll();
+}
+
+
 }

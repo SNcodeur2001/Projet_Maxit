@@ -159,7 +159,7 @@ $totalPages = $totalPages ?? 1;
                         <thead class="bg-gradient-to-r from-slate-50 to-blue-50">
                             <tr>
                                 <th class="px-8 py-6 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Proprietaire</th>
-                                <th class="px-8 py-6 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Téléphone</th>
+                                <th class="px-8 py-6 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Numero compte</th>
                                 <th class="px-8 py-6 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Solde</th>
                                 <th class="px-8 py-6 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Statut</th>
                                 <th class="px-8 py-6 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Status</th>

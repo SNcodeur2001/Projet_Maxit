@@ -13,11 +13,13 @@ Router::post('/register', CompteController::class, 'register');
 Router::get('/dashboard-client', CompteController::class, 'showDashboardClient', ['auth']);
 Router::get('/dashboard-gestionnaire', CompteController::class, 'showAllComptes', ['auth']);
 
-Router::get('/transactions', CompteController::class, 'showAllTransactions', ['auth']);
+Router::get('/transactions', CompteController::class, 'showTransactions', ['auth']);
 Router::get('/logout', CompteController::class, 'logout', ['auth']);
 
 // Formulaire de recherche de compte (par un gestionnaire)
 Router::get('/recherche-compte', CompteController::class, 'searchForm', ['auth']);
+// Ajouter cette ligne avec les autres routes CLIENT
+Router::get('/mes-transactions', CompteController::class, 'showMesTransactions', ['auth']);
 
 // Traitement du formulaire (POST)
 Router::post('/recherche-compte', CompteController::class, 'handleSearch', ['auth']);

@@ -115,4 +115,39 @@ public function getAllTransactionsByCompte($compteId, $type = null, $dateStart =
     public function delete() { /* implémentation */ }
     public function selectById() { /* implémentation */ }
     public function selectBy(array $filtre) { /* implémentation */ }
+
+
+    /**
+ * Récupère les transactions d'un compte avec filtres
+ */
+public function getTransactionsByCompteWithFilters($compteId, $type = '', $dateStart = '', $dateEnd = '')
+{
+    $sql = "SELECT * FROM transaction WHERE compte_id = :compte_id";
+    $params = ['compte_id' => $compteId];
+    
+    // Filtre par type
+    if (!empty($type)) {
+        $sql .= " AND type = :type";
+        $params['type'] = $type;
+    }
+    
+    // Filtre par date de début
+    if (!empty($dateStart)) {
+        $sql .= " AND DATE(created_at) >= :date_start";
+        $params['date_start'] = $dateStart;
+    }
+    
+    // Filtre par date de fin
+    if (!empty($dateEnd)) {
+        $sql .= " AND DATE(created_at) <= :date_end";
+        $params['date_end'] = $dateEnd;
+    }
+    
+    $sql .= " ORDER BY created_at DESC";
+    
+    $stmt = $this->pdo->prepare($sql);
+    $stmt->execute($params);
+    return $stmt->fetchAll();
+}
+
 }

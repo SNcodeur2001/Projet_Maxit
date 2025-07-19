@@ -483,6 +483,75 @@ public function handleAddSecondaryAccount()
     exit;
 }
 
+/**
+ * Affiche toutes les transactions du client connecté avec filtres
+ */
+public function showMesTransactions()
+{
+    Session::requireAuth();
+    $user = $_SESSION['user'];
+    
+    if ($user['profil'] !== 'CLIENT') {
+        header('Location: /unauthorized');
+        exit;
+    }
+
+    // Récupérer le compte principal du client
+    $compteRepo = App::getDependency('compteRepository');
+    $comptePrincipal = $compteRepo->getComptePrincipalByUserId($user['id']);
+    
+    if (!$comptePrincipal) {
+        $_SESSION['errors'] = ['Aucun compte principal trouvé'];
+        header('Location: /dashboard-client');
+        exit;
+    }
+
+    // Récupérer les filtres
+    $type = $_GET['type'] ?? '';
+    $dateStart = $_GET['date_start'] ?? '';
+    $dateEnd = $_GET['date_end'] ?? '';
+
+    // Récupérer les transactions avec filtres
+    $transactionRepo = App::getDependency('transactionRepository');
+    $transactions = $transactionRepo->getTransactionsByCompteWithFilters(
+        $comptePrincipal['id'], 
+        $type, 
+        $dateStart, 
+        $dateEnd
+    );
+
+    // Formater les transactions pour l'affichage
+    $transactionsFormatees = [];
+    foreach ($transactions as $transaction) {
+        $transactionsFormatees[] = [
+            'id' => $transaction['id'],
+            'type' => $transaction['type'],
+            'montant' => $transaction['montant'],
+            'libelle' => $transaction['libelle'] ?? '',
+            'date' => $transaction['created_at'],
+            'date_formatted' => date('d/m/Y à H:i', strtotime($transaction['created_at'])),
+            'montant_formatted' => $this->formatMontantTransaction($transaction['type'], $transaction['montant']),
+            'type_display' => $this->getTransactionDescription($transaction['type'])
+        ];
+    }
+
+    require_once dirname(__DIR__, 2) . '/templates/mesTransactions.php';
+}
+
+/**
+ * Formate le montant selon le type de transaction
+ */
+private function formatMontantTransaction($type, $montant)
+{
+    $prefix = in_array($type, ['DEPOT', 'TRANSFERT_RECU']) ? '+' : '-';
+    $color = in_array($type, ['DEPOT', 'TRANSFERT_RECU']) ? 'text-green-600' : 'text-red-600';
+    
+    return [
+        'formatted' => $prefix . number_format(abs($montant), 0, ',', ' ') . ' FCFA',
+        'color' => $color
+    ];
+}
+
 
 public function switchAccount()
 {

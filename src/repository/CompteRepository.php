@@ -231,4 +231,18 @@ public function countAllComptes(): int
     $stmt = $this->pdo->query($sql);
     return (int) $stmt->fetchColumn();
 }
+/**
+ * Récupère le compte principal d'un utilisateur
+ */
+public function getComptePrincipalByUserId($userId)
+{
+    $stmt = $this->pdo->prepare("
+        SELECT * FROM compte 
+        WHERE utilisateur_id = :user_id 
+        LIMIT 1
+    ");
+    $stmt->execute(['user_id' => $userId]);
+    return $stmt->fetch();
+}
+
 }

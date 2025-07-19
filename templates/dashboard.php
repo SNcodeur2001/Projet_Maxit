@@ -204,7 +204,7 @@ $recentTransactions = array_slice($recentTransactions, 0, 5);
                     <?php endforeach; ?>
                 </div>
                 <div class="mt-6 pt-6 border-t border-gray-200 text-center">
-                    <a href="/transactions" class="inline-flex items-center gap-2 text-primary hover:text-primary-dark font-semibold px-6 py-3 rounded-lg hover:bg-orange-50 transition-colors duration-200">
+                    <a href="/mes-transactions" class="inline-flex items-center gap-2 text-primary hover:text-primary-dark font-semibold px-6 py-3 rounded-lg hover:bg-orange-50 transition-colors duration-200">
                         Voir toutes les transactions
                         <span class="text-lg">→</span>
                     </a>

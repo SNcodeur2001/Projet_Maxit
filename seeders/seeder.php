@@ -83,7 +83,7 @@ class Seeder {
                 'nom' => 'Diop',
                 'prenom' => 'Amadou',
                 'adresse' => 'Dakar, Plateau',
-                'telephone' => '+221701234567',
+                'telephone' => '701234567',
                 'numero_piece_identite' => '1234567890123',
                 'photo_recto' => 'uploads/recto_1.jpg',
                 'photo_verso' => 'uploads/verso_1.jpg',
@@ -93,7 +93,7 @@ class Seeder {
                 'nom' => 'Fall',
                 'prenom' => 'Fatou',
                 'adresse' => 'Thiès, Centre-ville',
-                'telephone' => '+221702345678',
+                'telephone' => '702345678',
                 'numero_piece_identite' => '2345678901234',
                 'photo_recto' => 'uploads/recto_2.jpg',
                 'photo_verso' => 'uploads/verso_2.jpg',
@@ -103,7 +103,7 @@ class Seeder {
                 'nom' => 'Ndiaye',
                 'prenom' => 'Moussa',
                 'adresse' => 'Saint-Louis, Sor',
-                'telephone' => '+221703456789',
+                'telephone' => '703456789',
                 'numero_piece_identite' => '3456789012345',
                 'photo_recto' => 'uploads/recto_3.jpg',
                 'photo_verso' => 'uploads/verso_3.jpg',
@@ -113,7 +113,7 @@ class Seeder {
                 'nom' => 'Sow',
                 'prenom' => 'Aissatou',
                 'adresse' => 'Kaolack, Médina',
-                'telephone' => '+221704567890',
+                'telephone' => '704567890',
                 'numero_piece_identite' => '4567890123456',
                 'photo_recto' => 'uploads/recto_4.jpg',
                 'photo_verso' => 'uploads/verso_4.jpg',
@@ -123,7 +123,7 @@ class Seeder {
                 'nom' => 'Ba',
                 'prenom' => 'Ousmane',
                 'adresse' => 'Ziguinchor, Centre',
-                'telephone' => '+221705678901',
+                'telephone' => '705678901',
                 'numero_piece_identite' => '5678901234567',
                 'photo_recto' => 'uploads/recto_5.jpg',
                 'photo_verso' => 'uploads/verso_5.jpg',
@@ -201,21 +201,21 @@ class Seeder {
                 'numero' => 'MAX001002',
                 'solde' => 25000.00,
                 'statut' => 'COMPTE_SECONDAIRE',
-                'telephone_secondaire' => '+221706111111'
+                'telephone_secondaire' => '706111111'
             ],
             [
                 'utilisateur_id' => 2,
                 'numero' => 'MAX002002',
                 'solde' => 30000.00,
                 'statut' => 'COMPTE_SECONDAIRE',
-                'telephone_secondaire' => '+221706222222'
+                'telephone_secondaire' => '706222222'
             ],
             [
                 'utilisateur_id' => 3,
                 'numero' => 'MAX003002',
                 'solde' => 45000.00,
                 'statut' => 'COMPTE_SECONDAIRE',
-                'telephone_secondaire' => '+221706333333'
+                'telephone_secondaire' => '706333333'
             ]
         ];
         

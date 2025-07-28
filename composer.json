@@ -25,6 +25,6 @@
     "scripts": {
     "database:migrate": "php migrations/migration.php --reset",
     "seeder:migrate":"php seeders/seeder.php --reset",
-    "start": "php -S localhost:8000 -t public"
+    "start": "php -S localhost:8001 -t public"
 }
 }

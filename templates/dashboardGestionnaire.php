@@ -159,7 +159,20 @@ $totalPages = $totalPages ?? 1;
                         <thead class="bg-gradient-to-r from-slate-50 to-blue-50">
                             <tr>
                                 <th class="px-8 py-6 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Proprietaire</th>
-                                <th class="px-8 py-6 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Numero compte</th>
+                                <th class="px-8 py-6 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Numero comptehttp://localhost:8000/api/woyofal/acheter?numero_compteur=CPT123456&montant=100
+
+datacompteur"CPT123456"reference"WOY-20250727-8007"code"4851-2772-3511-5312"date"2025-07-27T20:57:38Z"tranche"Tranche 1"prix"98"nbreKwt"1.02"client"die niang"statut"success"code200message"Achat effectué avec succès"datacompteur"CPT123456"reference"WOY-20250727-8007"code"4851-2772-3511-5312"date"2025-07-27T20:57:38Z"tranche"Tranche 1"prix"98"nbreKwt"1.02"client"die niang"statut"success"code200message"Achat effectué avec succès"
+
+voici une application microservice qui permet d'acheter de l'electricite 
+
+ajoute la fonctionnalité pour faire cet achat dans le projet maxit en te basant sur l'url lors du payement on donne le numero du compteur et le montant 
+
+puis on fetch les reponse qui sont dans woyofal cela nous donne un recu du payement avec le code de recharge woyofal
+
+
+
+
+</th>
                                 <th class="px-8 py-6 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Solde</th>
                                 <th class="px-8 py-6 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Statut</th>
                                 <th class="px-8 py-6 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Status</th>

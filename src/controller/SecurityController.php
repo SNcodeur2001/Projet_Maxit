@@ -6,10 +6,8 @@ use App\Core\Abstract\AbstractController;
 use App\Core\Validator;
 use App\Repository\UserRepository;
 use App\Service\SmsService;
- use App\Core\App;
+use App\Core\App;
 use App\Enum\ValidationMessages;
-
-
 
 use Exception;
 
@@ -22,7 +20,7 @@ class SecurityController extends AbstractController
     {
         parent::__construct();
         $this->userRepository = App::getdependency('userRepository');
-        $this->smsService =App::getDependency('smsService');
+        $this->smsService = App::getDependency('smsService');
     }
 
     public function store()
@@ -95,17 +93,27 @@ class SecurityController extends AbstractController
             $userId = $this->userRepository->create($userData);
 
             if ($userId) {
+                // Créer le compte primaire automatiquement
+                $compteRepo = App::getDependency('compteRepository');
+                $compteResult = $compteRepo->createComptePrimaire($userId);
+
+                if (!$compteResult['success']) {
+                    // Si la création du compte échoue, supprimer l'utilisateur créé
+                    // (optionnel selon votre logique métier)
+                    throw new Exception('Erreur lors de la création du compte: ' . $compteResult['message']);
+                }
+
                 // ✨ Envoi du SMS de bienvenue
                 $smsEnvoye = $this->smsService->sendWelcomeSms(
-                    $userData['telephone'], 
+                    $userData['telephone'],
                     $userData['prenom']
                 );
-                
+
                 $successMessage = ValidationMessages::ACCOUNT_CREATED->value;
                 if ($smsEnvoye) {
                     $successMessage .= ValidationMessages::SMS_SENT->value;
                 }
-                
+
                 $this->session->set('success', $successMessage);
                 header('Location: /');
                 exit;
@@ -115,21 +123,22 @@ class SecurityController extends AbstractController
                 header('Location: /');
                 exit;
             }
-
         } catch (Exception $e) {
             // ✨ Gestion spécifique des erreurs d'unicité PostgreSQL
             $errorMessage = $e->getMessage();
             $errors = [];
-            
-            if (strpos($errorMessage, 'utilisateur_piece_unique') !== false || 
-                strpos($errorMessage, 'numero_piece_identite') !== false) {
+
+            if (
+                strpos($errorMessage, 'utilisateur_piece_unique') !== false ||
+                strpos($errorMessage, 'numero_piece_identite') !== false
+            ) {
                 $errors['numero_piece_identite'] = ValidationMessages::CNI_ALREADY_USED->value;
             } elseif (strpos($errorMessage, 'telephone') !== false) {
                 $errors['telephone'] = ValidationMessages::TELEPHONE_DB_UNIQUE->value;
             } else {
                 $errors['general'] = ValidationMessages::GENERAL_ERROR->value;
             }
-            
+
             $this->session->set('errors', $errors);
             $this->session->set('old_data', $_POST);
             header('Location: /');
@@ -191,47 +200,68 @@ class SecurityController extends AbstractController
 
         $login = trim($_POST['loginTelephone']); // Peut être téléphone OU numéro de compte
 
-// 1. Essayer par téléphone (utilisateur principal)
-$user = $this->userRepository->findByTelephone($login);
+        // 1. Essayer par téléphone (utilisateur principal)
+        $user = $this->userRepository->findByTelephone($login);
+        $compteRepo = App::getDependency('compteRepository');
 
-if ($user) {
-    $this->session->set('user', [
-        'id' => $user['id'],
-        'prenom' => $user['prenom'],
-        'nom' => $user['nom'],
-        'telephone' => $user['telephone'],
-        'profil' => $user['profil'] ?? 'client'
-    ]);
-    if ($user['profil'] === 'SERVICE_COMMERCIAL') {
-        header('Location: /dashboard-gestionnaire');
-    } else {
-        header('Location: /dashboard-client');
-    }
-    exit;
-}
+        if ($user) {
+            // Récupérer le compte principal de l'utilisateur
+            $compte = $compteRepo->getComptePrincipalByUserId($user['id']);
 
-// 2. Essayer par numéro de compte (primaire ou secondaire)
-$compteRepo = \App\Core\App::getDependency('compteRepository');
-$compte = $compteRepo->findByNumeroCompte($login); // <-- AJOUTE cette méthode si besoin
+            if ($compte) {
+                $this->session->set('user', [
+                    'id' => $user['id'],
+                    'prenom' => $user['prenom'],
+                    'nom' => $user['nom'],
+                    'telephone' => $user['telephone'],
+                    'profil' => $user['profil'] ?? $user['type'] ?? 'CLIENT',
+                    'compte_id' => $compte['id'], // ✅ IMPORTANT: Ajout du compte_id
+                    'numero_compte' => $compte['numero'],
+                    'solde' => $compte['solde'],
+                    'statut_compte' => $compte['statut'],
+                ]);
 
-if ($compte) {
-    $user = $this->userRepository->findById($compte['utilisateur_id']);
-    if ($user) {
-        // Ajoute les infos du compte à la session
-        $user['numero_compte'] = $compte['numero'];
-        $user['solde'] = $compte['solde'];
-        $user['statut_compte'] = $compte['statut'];
-        $this->session->set('user', $user);
-        $_SESSION['success'] = 'Connexion réussie (compte secondaire) !';
-        header('Location: /dashboard-client');
+                if (($user['profil'] ?? $user['type']) === 'SERVICE_COMMERCIAL') {
+                    header('Location: /dashboard-gestionnaire');
+                } else {
+                    header('Location: /dashboard-client');
+                }
+                exit;
+            } else {
+                $this->session->set('errors', ['Aucun compte associé à cet utilisateur']);
+                header('Location: /');
+                exit;
+            }
+        }
+
+        // 2. Essayer par numéro de compte (primaire ou secondaire)
+        $compte = $compteRepo->findByNumeroCompte($login);
+
+        if ($compte) {
+            $user = $this->userRepository->findById($compte['utilisateur_id']);
+            if ($user) {
+                $this->session->set('user', [
+                    'id' => $user['id'],
+                    'prenom' => $user['prenom'],
+                    'nom' => $user['nom'],
+                    'telephone' => $user['telephone'],
+                    'profil' => $user['profil'] ?? $user['type'] ?? 'CLIENT',
+                    'compte_id' => $compte['id'], // ✅ IMPORTANT: Ajout du compte_id
+                    'numero_compte' => $compte['numero'],
+                    'solde' => $compte['solde'],
+                    'statut_compte' => $compte['statut'],
+                ]);
+
+                $this->session->set('success', 'Connexion réussie !');
+                header('Location: /dashboard-client');
+                exit;
+            }
+        }
+
+        // Si aucun utilisateur trouvé
+        $this->session->set('errors', ['Aucun compte trouvé avec ce numéro de téléphone ou de compte']);
+        header('Location: /');
         exit;
-    }
-}
-
-// Si aucun utilisateur trouvé
-$_SESSION['errors'] = ['Aucun compte trouvé avec ce numéro de téléphone ou de compte'];
-header('Location: /');
-exit;
     }
 
     public function logout()
@@ -247,7 +277,6 @@ exit;
     private function handleFileUpload(string $fieldName, string $uploadDir): string
     {
         if (!isset($_FILES[$fieldName]) || $_FILES[$fieldName]['error'] !== UPLOAD_ERR_OK) {
-
             throw new Exception(ValidationMessages::FILE_UPLOAD_ERROR->value . " {$fieldName}");
         }
 
@@ -256,7 +285,7 @@ exit;
             mkdir($uploadDir, 0755, true);
         }
 
-        // Générer un nom unique pour le fichiera
+        // Générer un nom unique pour le fichier
         $fileExtension = pathinfo($_FILES[$fieldName]['name'], PATHINFO_EXTENSION);
         $fileName = uniqid() . '_' . time() . '.' . $fileExtension;
         $filePath = $uploadDir . $fileName;
@@ -265,7 +294,6 @@ exit;
         if (move_uploaded_file($_FILES[$fieldName]['tmp_name'], $filePath)) {
             return $filePath;
         } else {
-
             throw new Exception(ValidationMessages::FILE_SAVE_ERROR->value . " {$fieldName}");
         }
     }

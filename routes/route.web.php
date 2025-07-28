@@ -2,6 +2,7 @@
 
 use App\Controller\CompteController;
 use App\Controller\SecurityController;
+use App\Controller\WoyofalController;
 use App\Core\Router;
 
 // Routes publiques (pour les invités uniquement)
@@ -38,3 +39,6 @@ Router::get('/ajouter-compte-secondaire', CompteController::class, 'showAddSecon
 Router::post('/ajouter-compte-secondaire', CompteController::class, 'handleAddSecondaryAccount', ['auth']);
 Router::post('/basculer-compte', CompteController::class, 'switchAccount', ['auth']);
 
+Router::get('/woyofal', WoyofalController::class, 'showWoyofalForm', ['auth']);
+Router::post('/woyofal/payer', WoyofalController::class, 'processWoyofalPayment', ['auth']);
+Router::get('/woyofal/confirmation', WoyofalController::class, 'showConfirmation', ['auth']);

@@ -321,5 +321,77 @@ public function getComptesByUserId($userId)
     return $stmt->fetchAll();
 }
 
+/**
+ * Crée une transaction et met à jour le solde du compte
+ */
+public function createTransaction(int $compteId, string $type, float $montant, string $libelle = ''): array
+{
+    try {
+        $this->pdo->beginTransaction();
+        
+        // 1. Vérifier que le compte existe
+        $compte = $this->findById($compteId);
+        if (!$compte) {
+            throw new \Exception("Compte non trouvé");
+        }
+        
+        // 2. Calculer le nouveau solde selon le type de transaction
+        $nouveauSolde = $compte['solde'];
+        switch ($type) {
+            case 'DEPOT':
+                $nouveauSolde += $montant;
+                break;
+            case 'RETRAIT':
+                if ($compte['solde'] < $montant) {
+                    throw new \Exception("Solde insuffisant");
+                }
+                $nouveauSolde -= $montant;
+                break;
+            case 'PAIEMENT':
+                if ($compte['solde'] < $montant) {
+                    throw new \Exception("Solde insuffisant");
+                }
+                $nouveauSolde -= $montant;
+                break;
+            default:
+                throw new \Exception("Type de transaction invalide");
+        }
+        
+        // 3. Enregistrer la transaction
+        $stmt = $this->pdo->prepare("
+            INSERT INTO transaction (compte_id, type, montant, libelle) 
+            VALUES (:compte_id, :type, :montant, :libelle)
+        ");
+        $stmt->execute([
+            'compte_id' => $compteId,
+            'type' => $type,
+            'montant' => $montant,
+            'libelle' => $libelle
+        ]);
+        
+        // 4. Mettre à jour le solde du compte
+        $updateResult = $this->updateSolde($compteId, $nouveauSolde);
+        if (!$updateResult) {
+            throw new \Exception("Erreur lors de la mise à jour du solde");
+        }
+        
+        $this->pdo->commit();
+        
+        return [
+            'success' => true,
+            'message' => 'Transaction créée avec succès',
+            'transaction_id' => $this->pdo->lastInsertId(),
+            'nouveau_solde' => $nouveauSolde
+        ];
+        
+    } catch (\Exception $e) {
+        $this->pdo->rollBack();
+        return [
+            'success' => false,
+            'message' => 'Erreur : ' . $e->getMessage()
+        ];
+    }
+}
+
 
 }

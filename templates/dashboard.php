@@ -125,10 +125,12 @@ $recentTransactions = array_slice($recentTransactions, 0, 5);
                 <div class="text-lg font-bold text-gray-800 mb-2">Effectuer un transfert</div>
                 <div class="text-sm text-gray-600">Envoyer de l'argent rapidement et en sécurité</div>
             </div>
-            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 text-center cursor-pointer hover:-translate-y-2 border border-gray-100 group" onclick="showAction('payment')">
+            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 text-center cursor-pointer hover:-translate-y-2 border border-gray-100 group">
+                <a href="/woyofal">
                 <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">💳</div>
-                <div class="text-lg font-bold text-gray-800 mb-2">Paiement</div>
+                <div class="text-lg font-bold text-gray-800 mb-2">Woyofal</div>
                 <div class="text-sm text-gray-600">Payer vos factures et services</div>
+                </a>
             </div>
             <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 text-center cursor-pointer hover:-translate-y-2 border border-gray-100 group" onclick="showAction('history')">
                 <div class="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">📊</div>

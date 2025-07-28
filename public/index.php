@@ -6,7 +6,6 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // Démarrer la session
-session_start();
 
 // Load Composer autoloader
 require_once __DIR__ . '/../vendor/autoload.php';

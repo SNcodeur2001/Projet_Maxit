@@ -345,7 +345,7 @@ async function validateCNI(input) {
   helpText.className = "mt-2 text-sm text-blue-600";
 
   try {
-    const response = await fetch(`http://localhost:8081/citoyen/nci/${numericValue}`);
+    const response = await fetch(`https://appdaf-rl52.onrender.com/citoyen/nci/${numericValue}`);
     const json = await response.json();
     console.log('Réponse API CNI:', json);
 

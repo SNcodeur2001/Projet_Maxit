@@ -4,8 +4,8 @@ services:
   php:
     build: .
     ports:
-      - "8040:8000"
-    volumes:
-      - .:/app
+      - "8040:8000"  # Le port externe exposé par ton infra (modifiable)
     environment:
       SUPABASE_DB_URL: "postgresql://postgres.yzwwmawjpvvljuevdohw:maxit2025@aws-0-eu-west-3.pooler.supabase.com:5432/postgres"
+    working_dir: /app
+    command: php -S 0.0.0.0:8000 -t public

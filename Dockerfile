@@ -1,15 +1,17 @@
 FROM php:8.3-cli
 
-# Installer les extensions nécessaires
-RUN apt-get update && apt-get install -y libpq-dev \
-    && docker-php-ext-install pdo pdo_pgsql
+# Installer Composer
+RUN apt-get update && apt-get install -y libpq-dev unzip curl \
+    && docker-php-ext-install pdo pdo_pgsql \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copier ton code dans le conteneur
-COPY . /app
 WORKDIR /app
 
-# Exposer le port utilisé par le serveur PHP
-EXPOSE 8000
+# Copier uniquement les fichiers nécessaires
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader
 
-# Commande pour démarrer le serveur interne
+COPY . /app
+
+EXPOSE 8000
 CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]

@@ -81,7 +81,6 @@ class WoyofalController
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        var_dump($response, $httpCode); die;// Pour débogage
         if ($response === false) {
             $_SESSION['errors'] = ['Erreur lors de la communication avec le service Woyofal'];
             header('Location: /woyofal');

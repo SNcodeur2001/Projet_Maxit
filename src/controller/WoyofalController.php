@@ -71,7 +71,7 @@ class WoyofalController
         }
         
         // Appel à l'API Woyofal
-        $apiUrl = "http://localhost:8000/api/woyofal/acheter?numero_compteur=" . urlencode($compteur) . "&montant=" . urlencode($montant);
+        $apiUrl = "https://appwoyofal-latest-5nkc.onrender.com/api/woyofal/acheter?numero_compteur=" . urlencode($compteur) . "&montant=" . urlencode($montant);
         
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $apiUrl);
@@ -81,7 +81,7 @@ class WoyofalController
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        
+        var_dump($response, $httpCode); die;// Pour débogage
         if ($response === false) {
             $_SESSION['errors'] = ['Erreur lors de la communication avec le service Woyofal'];
             header('Location: /woyofal');

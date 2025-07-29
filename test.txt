@@ -1,0 +1,39 @@
+Dans le dockerfile
+===============================================================================================
+FROM php:8.3-cli
+
+# Installer Composer
+RUN apt-get update && apt-get install -y libpq-dev unzip curl \
+    && docker-php-ext-install pdo pdo_pgsql \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+WORKDIR /app
+
+# Copier uniquement les fichiers nécessaires
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader
+
+COPY . /app
+
+EXPOSE 8000
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+=====================================================================================================
+
+
+
+
+Dans dockercompose.yml 
+
+=====================================================================================================
+
+version: '3.8'
+
+services:
+  php:
+    build: .
+    ports:
+      - "8040:8000"  # Le port externe exposé par ton infra (modifiable)
+    environment:
+      SUPABASE_DB_URL: "postgresql://postgres.yzwwmawjpvvljuevdohw:maxit2025@aws-0-eu-west-3.pooler.supabase.com:5432/postgres"
+    working_dir: /app
+    command: php -S 0.0.0.0:8000 -t public
